@@ -1,0 +1,27 @@
+- name: Get Instance Facts
+  community.aws.ec2_instance_info:
+    filters:
+      "tag:Name": "{{ server_name }}"
+      "tag:Owner": "{{ username }}"
+      instance-state-name: [ "running", "stopped" ]
+  register: instance_query_results
+
+- debug:
+    msg: "{{ instance_query_results.instances | map(attribute='private_ip_address') }}"
+
+- import_tasks: create_local_dev_environment.yml
+  when: instance_query_results.instances | map(attribute='private_ip_address') | length == 0
+
+- name: Add hosts
+  add_host:
+    name: "{{item}}"
+    group: [ local_dev_servers ]
+  with_items: "{{ instance_query_results.instances | map(attribute='private_ip_address') }}"
+  when: instance_query_results.instances | map(attribute='private_ip_address') | length > 0
+
+- name: Start instances that were previously launched
+  amazon.aws.ec2:
+    state: running
+    region: us-east-2
+    wait: True
+    instance_ids: "{{ instance_query_results.instances | map(attribute='instance_id') }}"

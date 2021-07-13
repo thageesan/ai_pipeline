@@ -1,0 +1,49 @@
+---
+
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - import_tasks: local_environment_check.yml
+
+    - name: Add hosts
+      add_host:
+        name: "{{item}}"
+        group: [ local_dev_servers ]
+      with_items: "{{ instance_query_results.instances | map(attribute='private_ip_address') }}"
+      when: instance_query_results.instances | map(attribute='private_ip_address') | length > 0
+
+- hosts: local_dev_servers
+  remote_user: ec2-user
+  gather_facts: false
+
+  tasks:
+    - debug:
+
+    - name: Start local dev environment
+      shell: |
+        cd /home/ec2-user
+        watchdir=/home/ec2-user/reporter_repo
+        docker-compose -f docker-compose.local.yml down
+        docker-compose -f docker-compose.local.yml up -d
+
+        while : ; do
+                inotifywait $watchdir|while read path action file; do
+                        ts=$(date +"%C%y%m%d%H%M%S")
+                        docker-compose -f docker-compose.local.yml stop reporter.ezra
+                        docker-compose -f docker-compose.local.yml rm reporter.ezra
+                        docker-compose -f docker-compose.local.yml start reporter.ezra
+                        echo "$ts :: file: $file :: $action :: $path"
+                done
+        done
+        exit 0
+
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - meta: refresh_inventory
+
+- hosts: local_dev_servers
+  gather_facts: false
+  tasks:
+    - debug:

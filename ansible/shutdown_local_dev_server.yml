@@ -1,0 +1,24 @@
+---
+
+- name: Shutdown Local QS Environment
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Get Instance Facts
+      community.aws.ec2_instance_info:
+        filters:
+          "tag:Name": "{{ server_name }}"
+          "tag:Owner": "{{ username }}"
+          instance-state-name: [ "running" ]
+      register: instance_query_results
+
+    - name: Debug
+      debug:
+        msg: "{{ instance_query_results.instances | map(attribute='instance_id') }}"
+
+    - name: Terminate instances that were previously launched
+      amazon.aws.ec2:
+        state: stopped
+        region: us-east-2
+        instance_ids: "{{ instance_query_results.instances | map(attribute='instance_id') }}"

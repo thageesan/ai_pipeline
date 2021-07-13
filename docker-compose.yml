@@ -1,0 +1,19 @@
+version: '3.1'
+services:
+  ml.thageesan:
+    build:
+      context: .
+      dockerfile: ./ai/Dockerfile
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [ gpu ]
+    environment:
+      - CSV_FILE=${CSV_FILE}
+      - APP_ENVIRONMENT=${APP_ENVIRONMENT}
+      - APP_NAME=${APP_NAME}
+    volumes:
+      - ./data:/app/data
+      - ./ai:/app/ai
+      - ./shared:/app/shared

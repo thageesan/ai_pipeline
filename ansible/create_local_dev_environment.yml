@@ -1,0 +1,78 @@
+---
+# See this doc for instructions on how to modify this script if you are having issues.
+# https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/install-nvidia-driver.html
+# Amazon Linux 2 is a RHEL based distribution
+# Cuda installation guide can be found here https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
+# Note: you might need to keep the cuda driver up to date visit https://developer.nvidia.com/cuda-downloads to find
+# the latest version
+
+
+
+
+- meta: refresh_inventory
+- pip:
+    name: boto3
+
+- name: Gather facts about amazon 2 ami ecs with GPU
+  amazon.aws.ec2_ami_info:
+    owners: 591542846629
+    filters:
+      name: amzn2-ami-ecs-gpu-hvm-2.0.*
+  register: ami_images
+
+- name: Debug
+  debug:
+    msg: "{{ ami_images.images | map(attribute='image_id') | last }}"
+
+- name: Create EC2 Instance with GPU
+  amazon.aws.ec2:
+    key_name: "{{ key_pair }}"
+    instance_type: g4dn.xlarge
+    image: "{{ ami_images.images | map(attribute='image_id') | last }}"
+    region: us-east-2
+    user_data: |
+      #!/bin/bash
+      mkdir /home/ec2-user/reporter_repo
+      sudo amazon-linux-extras install epel
+      sudo yum install kernel-devel-$(uname -r) kernel-headers-$(uname -r)
+      sudo yum install wget git rsync awscli inotify-tools -y
+      wget https://developer.download.nvidia.com/compute/cuda/11.2.2/local_installers/cuda_11.2.2_460.32.03_linux.run
+      chmod +x cuda_11.2.2_460.32.03_linux.run
+      sudo ./cuda_11.2.2_460.32.03_linux.run --silent --override --toolkit --samples --toolkitpath=/usr/local/cuda-version --samplespath=/usr/local/cuda --no-opengl-libs
+      ln -s /usr/local/cuda-version /usr/local/cuda
+      rm -rf cuda_11.2.2_460.32.03_linux.run
+      nvidia-smi
+      sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+      sudo chmod +x /usr/local/bin/docker-compose
+      sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+    wait: yes
+    group: ["{{security_group}}"]
+    count: 1
+    instance_profile_name: global-quicksilver-instance_profile
+    vpc_subnet_id: "{{vpc_subnet_id}}"
+    assign_public_ip: no
+    volumes:
+      - device_name: /dev/xvda
+        volume_type: gp2
+        volume_size: 100
+        delete_on_termination: true
+    instance_tags:
+      Name: "{{ server_name }}"
+      Owner: "{{ username }}"
+      Env: Local
+  register: ec2_creation_result
+
+- name: Debug
+  debug:
+    msg: "{{ ec2_creation_result.instances | map(attribute='private_ip') }}"
+
+- name: Add hosts
+  add_host:
+    name: "{{item}}"
+    group: [local_dev_servers]
+  with_items: "{{ ec2_creation_result.instances | map(attribute='private_ip') }}"
+
+
+- name: Wait 1 minute for server to stabilize
+  pause:
+    minutes: 1

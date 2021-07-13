@@ -1,0 +1,53 @@
+---
+
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - import_tasks: local_environment_check.yml
+
+    - name: Add hosts
+      add_host:
+        name: "{{item}}"
+        group: [ local_dev_servers ]
+      with_items: "{{ instance_query_results.instances | map(attribute='private_ip_address') }}"
+      when: instance_query_results.instances | map(attribute='private_ip_address') | length > 0
+
+- hosts: local_dev_servers
+  remote_user: ec2-user
+  gather_facts: false
+
+  tasks:
+    - debug:
+
+    - name: Synchronizing with local dev environment
+      ansible.posix.synchronize:
+        src: ./../../
+        dest: /home/ec2-user/reporter_repo
+        delete: yes
+        rsync_path: "sudo rsync"  # Use sudo on the remote system
+        recursive: true
+        rsync_opts:
+          - "--exclude=.git"
+          - "--exclude=.github"
+          - "--exclude=env"
+          - "--exclude=*.pyc"
+          - "--exclude=__pycache__"
+          - "--exclude=.idea"
+          - "--exclude=ansible"
+          - "--exclude=.pytest_cache"
+#          - "--exclude=data"
+          - "--exclude=htmlcov"
+          - "--exclude=models"
+          - "--exclude=.coverage"
+          - "--exclude=*.sh"
+      become: no
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - meta: refresh_inventory
+
+- hosts: local_dev_servers
+  gather_facts: false
+  tasks:
+    - debug:

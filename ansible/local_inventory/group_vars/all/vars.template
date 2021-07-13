@@ -1,0 +1,9 @@
+---
+
+username: <enter your name no spaces>
+name: <enter name of project>
+aws_region: <enter aws region>
+security_group: <enter security group id>
+vpc_subnet_id: <enter vpc subnet id>
+key_pair: <enter key pair id>
+server_name: <enter server name>
