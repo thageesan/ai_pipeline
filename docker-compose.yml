@@ -10,9 +10,12 @@ services:
           devices:
             - capabilities: [ gpu ]
     environment:
-      - CSV_FILE=${CSV_FILE}
       - APP_ENVIRONMENT=${APP_ENVIRONMENT}
       - APP_NAME=${APP_NAME}
+      - POSITIVE_CSV_FILE=${POSITIVE_CSV_FILE}
+      - NEGATIVE_CSV_FILE=${NEGATIVE_CSV_FILE}
+      - SNIPPET_CSV_FILE=${SNIPPET_CSV_FILE}
+      - USE_CPU=${USE_CPU}
     volumes:
       - ./data:/app/data
       - ./ai:/app/ai

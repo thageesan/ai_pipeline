@@ -5,4 +5,5 @@ class EInfoCode(Enum):
     I00000 = 'Logger Initialized'
     I00001 = 'Using cuda? %s'
     I00002 = 'method:  %s ---- %s seconds ----'
-    I00003 = 'Using CPU to read CSV.'
+    I00003 = 'Using CPU'
+    I00004 = 'Using GPU'
