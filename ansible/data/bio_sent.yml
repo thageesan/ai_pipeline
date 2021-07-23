@@ -4,7 +4,7 @@
   gather_facts: false
 
   tasks:
-    - import_tasks: local_environment_check.yml
+    - import_tasks: ./../local_environment_check.yml
 
     - name: Add hosts
       add_host:
@@ -31,7 +31,7 @@
           - gcc-c++
           - pkgconfig
           - poppler-cpp-devel
-    
+
     - name: Recursively change ownership of a directory
       ansible.builtin.file:
         path: /home/ec2-user/reporter_repo
@@ -48,20 +48,18 @@
         extra_args: --upgrade
         executable: pip3
 
-    - name: Install invoke
+    - name: Install pipx
       pip:
-        name: invoke
+        name: pipx
         executable: pip3
+        extra_args: --user
 
+    - name: Add pipx to PATH
+      shell: |
+        python3 -m pipx ensurepath
 
-    - name: Install specified python requirements
-      pip:
-        requirements: /home/ec2-user/reporter_repo/requirements.txt
-        executable: pip3
-
-    - name: Sync Model
-      shell: /home/ec2-user/.local/bin/invoke --search-root="/home/ec2-user/reporter_repo" modelsync
+    - name: Get Bio Sent Model
+      shell: |
+        ./start_data_pipeline.sh sync_bio_sent
       args:
         chdir: /home/ec2-user/reporter_repo
-        
-        

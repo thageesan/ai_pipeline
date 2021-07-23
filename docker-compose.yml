@@ -3,7 +3,7 @@ services:
   ml.thageesan:
     build:
       context: .
-      dockerfile: ./ai/Dockerfile
+      dockerfile: ai/Dockerfile
     deploy:
       resources:
         reservations:
@@ -16,6 +16,8 @@ services:
       - NEGATIVE_CSV_FILE=${NEGATIVE_CSV_FILE}
       - SNIPPET_CSV_FILE=${SNIPPET_CSV_FILE}
       - USE_CPU=${USE_CPU}
+      - GOOGLE_SERVICE_ACCOUNT_KF_DICT=${GOOGLE_SERVICE_ACCOUNT_KF_DICT}
+      - GDRIVE_ID=${GDRIVE_ID}
     volumes:
       - ./data:/app/data
       - ./ai:/app/ai

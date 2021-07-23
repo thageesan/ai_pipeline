@@ -1,0 +1,65 @@
+---
+
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - import_tasks: ./../local_environment_check.yml
+
+    - name: Add hosts
+      add_host:
+        name: "{{item}}"
+        group: [ local_dev_servers ]
+      with_items: "{{ instance_query_results.instances | map(attribute='private_ip_address') }}"
+      when: instance_query_results.instances | map(attribute='private_ip_address') | length > 0
+
+- hosts: local_dev_servers
+  remote_user: ec2-user
+  gather_facts: false
+
+  tasks:
+    - debug:
+
+    - name: Install yum packages
+      yum:
+        name: "{{ packages }}"
+        state: latest
+      become: yes
+      vars:
+        packages:
+          - python3-devel
+          - gcc-c++
+          - pkgconfig
+          - poppler-cpp-devel
+
+    - name: Recursively change ownership of a directory
+      ansible.builtin.file:
+        path: /home/ec2-user/reporter_repo
+        state: directory
+        recurse: yes
+        owner: ec2-user
+        group: ec2-user
+        mode: '0755'
+      become: yes
+
+    - name: Install and upgrade pip
+      pip:
+        name: pip
+        extra_args: --upgrade
+        executable: pip3
+
+    - name: Install pipx
+      pip:
+        name: pipx
+        executable: pip3
+        extra_args: --user
+
+    - name: Add pipx to PATH
+      shell: |
+        python3 -m pipx ensurepath
+        
+    - name: Get Positive Training Samples
+      shell: |
+        ./start_data_pipeline.sh positive_train_samples
+      args:
+        chdir: /home/ec2-user/reporter_repo

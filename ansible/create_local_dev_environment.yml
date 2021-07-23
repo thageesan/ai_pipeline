@@ -27,7 +27,7 @@
 - name: Create EC2 Instance with GPU
   amazon.aws.ec2:
     key_name: "{{ key_pair }}"
-    instance_type: g4dn.xlarge
+    instance_type: r5n.large
     image: "{{ ami_images.images | map(attribute='image_id') | last }}"
     region: us-east-2
     user_data: |
@@ -35,7 +35,7 @@
       mkdir /home/ec2-user/reporter_repo
       sudo amazon-linux-extras install epel
       sudo yum install kernel-devel-$(uname -r) kernel-headers-$(uname -r)
-      sudo yum install wget git rsync awscli inotify-tools -y
+      sudo yum install wget git rsync awscli inotify-tools python3-pip -y
       wget https://developer.download.nvidia.com/compute/cuda/11.2.2/local_installers/cuda_11.2.2_460.32.03_linux.run
       chmod +x cuda_11.2.2_460.32.03_linux.run
       sudo ./cuda_11.2.2_460.32.03_linux.run --silent --override --toolkit --samples --toolkitpath=/usr/local/cuda-version --samplespath=/usr/local/cuda --no-opengl-libs

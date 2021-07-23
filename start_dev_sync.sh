@@ -5,4 +5,4 @@ brew install ansible watchman
 
 ansible-playbook -i ansible/local_inventory ansible/update_local_environment.yml
 
-watchman-make -p ai/**/* --run "ansible-playbook -i ansible/local_inventory ansible/update_local_environment.yml"
+watchman-make -p 'ai/**/*.py' 'shared/**/*.py' 'ai/Dockerfile' '.env' 'data/**/*.bin' 'data/**/*.csv' './**/*.sh' --run 'ansible-playbook -i ansible/local_inventory ansible/update_local_environment.yml'
