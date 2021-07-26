@@ -19,11 +19,5 @@
 
   tasks:
     - import_tasks: ./setup_dvc.yml
-        
-    - name: Get Positive Training Samples
-      shell: |
-        ./start_data_pipeline.sh positive_train_samples
-      args:
-        chdir: /home/ec2-user/reporter_repo
 
     - import_tasks: ./remote_local_sync.yml

@@ -19,10 +19,10 @@
 
   tasks:
     - import_tasks: ./setup_dvc.yml
-        
+
     - name: Get Positive Training Samples
       shell: |
-        ./start_data_pipeline.sh positive_train_samples
+        ./start_data_pipeline.sh snippet_database
       args:
         chdir: /home/ec2-user/reporter_repo
 

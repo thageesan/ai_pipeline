@@ -13,7 +13,7 @@ def get_google_credentials(google_service_account_dict):
     :return:
     """
     try:
-        google_service_account_key_file_dict = json.loads(json.loads(google_service_account_dict))
+        google_service_account_key_file_dict = json.loads(google_service_account_dict)
     except JSONDecodeError as e:
         logger.error(EErrorCode.E00023.value, e, extra={'code': EErrorCode.E00023.name})
         raise

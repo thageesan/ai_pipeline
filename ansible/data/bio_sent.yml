@@ -18,48 +18,12 @@
   gather_facts: false
 
   tasks:
-    - debug:
-
-    - name: Install yum packages
-      yum:
-        name: "{{ packages }}"
-        state: latest
-      become: yes
-      vars:
-        packages:
-          - python3-devel
-          - gcc-c++
-          - pkgconfig
-          - poppler-cpp-devel
-
-    - name: Recursively change ownership of a directory
-      ansible.builtin.file:
-        path: /home/ec2-user/reporter_repo
-        state: directory
-        recurse: yes
-        owner: ec2-user
-        group: ec2-user
-        mode: '0755'
-      become: yes
-
-    - name: Install and upgrade pip
-      pip:
-        name: pip
-        extra_args: --upgrade
-        executable: pip3
-
-    - name: Install pipx
-      pip:
-        name: pipx
-        executable: pip3
-        extra_args: --user
-
-    - name: Add pipx to PATH
-      shell: |
-        python3 -m pipx ensurepath
+    - import_tasks: ./setup_dvc.yml
 
     - name: Get Bio Sent Model
       shell: |
         ./start_data_pipeline.sh sync_bio_sent
       args:
         chdir: /home/ec2-user/reporter_repo
+
+    - import_tasks: ./remote_local_sync.yml

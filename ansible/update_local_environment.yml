@@ -44,21 +44,6 @@
           - "--exclude=params.yaml"
       become: no
 
-    - name: Synchronizing remote with local environment
-      ansible.posix.synchronize:
-        mode: pull
-        src: /home/ec2-user/reporter_repo/
-        dest: ./../../
-        delete: yes
-        rsync_path: "sudo rsync"  # Use sudo on the remote system
-        partial: yes
-        recursive: true
-        rsync_opts:
-          - "--exclude=ai"
-          - "--exclude=shared"
-          - "--exclude=.dvc"
-      become: no
-
 - hosts: localhost
   gather_facts: false
   tasks:

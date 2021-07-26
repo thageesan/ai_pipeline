@@ -14,7 +14,7 @@ def app():
     save_location = path.join(getcwd(), 'data')
 
     drive = Drive(drive_id=drive_id, credentials=google_credentials)
-    drive.download(file_name=file_name, mime_type=MimeType.MAC_BINARY.value, save_location=save_location)
+    drive.download(file_name=file_name, mime_type=MimeType.CSV.value, save_location=save_location)
 
 
 if __name__ == '__main__':
