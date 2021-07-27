@@ -38,6 +38,8 @@ class Drive:
                 os.remove(save_file_path)
                 exit(1)
 
+        return save_file_path
+
     def check_file_exists(self, file_name, mime_type):
         """
         Checks to see if file exists.

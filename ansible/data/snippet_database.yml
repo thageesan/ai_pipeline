@@ -22,7 +22,7 @@
 
     - name: Get Positive Training Samples
       shell: |
-        ./start_data_pipeline.sh snippet_database
+        ./start_data_pipeline.sh migrate_snippet_database
       args:
         chdir: /home/ec2-user/reporter_repo
 

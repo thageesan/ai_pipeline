@@ -1,43 +1,33 @@
 schema: '2.0'
 stages:
-  sync_bio_sent:
-    cmd: docker-compose run ml.thageesan python -m ai.data.sync_bio_sent .
+  sync_negative_train_samples:
+    cmd: aws s3 cp s3://ezra-ml-dvc/reporter/df_negative_for_train_and_stats.csv ./data/df_negative_for_train_and_stats.csv
     deps:
-    - path: ai/data/sync_bio_sent/__init__.py
-      md5: dec039486f1020088e7563d70de1339c
-      size: 712
-    outs:
-    - path: data/bioSent2Vec.bin
-      md5: e0c6c5cf7e4f8e88ec253ee46b461e58
-      size: 22475736490
-  positive_train_samples:
-    cmd: docker-compose run ml.thageesan python -m ai.data.positive_train_samples
-      .
-    deps:
-    - path: ai/data/positive_train_samples/__init__.py
-      md5: 6282ccd869fdc969698af3defa511b47
-      size: 685
-    outs:
-    - path: data/df_positive_w_id_for_train_and_stats.csv
-      md5: cb351a0d8e69b4cb263e6265bb5bfff2
-      size: 3761166
-  negative_train_samples_train_samples:
-    cmd: docker-compose run ml.thageesan python -m ai.data.negative_train_samples
-      .
-    deps:
-    - path: ai/data/negative_train_samples/__init__.py
-      md5: e06fd5d0b6bf33fba9b1c3fdd1bde4d6
-      size: 680
+    - path: s3://ezra-ml-dvc/reporter/df_negative_for_train_and_stats.csv
+      etag: f6b1f978f37012919aaefc68fe6e07e7
+      size: 1592506
     outs:
     - path: data/df_negative_for_train_and_stats.csv
       md5: f6b1f978f37012919aaefc68fe6e07e7
       size: 1592506
-  snippet_database:
-    cmd: docker-compose run ml.thageesan python -m ai.data.snippet_database .
+  sync_positive_train_samples:
+    cmd: aws s3 cp s3://ezra-ml-dvc/reporter/df_positive_w_id_for_train_and_stats.csv
+      ./data/df_positive_w_id_for_train_and_stats.csv
     deps:
-    - path: ai/data/snippet_database/__init__.py
-      md5: 4d41d159c6f0badce206e6b2ee084d13
-      size: 688
+    - path: s3://ezra-ml-dvc/reporter/df_positive_w_id_for_train_and_stats.csv
+      etag: 60d30f28dbc13dd65f763d97f7d0a802
+      size: 3761166
+    outs:
+    - path: data/df_positive_w_id_for_train_and_stats.csv
+      md5: cb351a0d8e69b4cb263e6265bb5bfff2
+      size: 3761166
+  sync_snippet_database:
+    cmd: aws s3 cp s3://ezra-ml-dvc/reporter/cleaned_snippets_with_org_name_new_rows.csv
+      ./data/cleaned_snippets_with_org_name_new_rows.csv
+    deps:
+    - path: s3://ezra-ml-dvc/reporter/cleaned_snippets_with_org_name_new_rows.csv
+      etag: 945af0c2c6c3518377534b8740b0a0a5
+      size: 799345
     outs:
     - path: data/cleaned_snippets_with_org_name_new_rows.csv
       md5: 5376aeada62a4fb140929455ffe52e76

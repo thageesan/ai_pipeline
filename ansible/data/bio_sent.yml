@@ -22,7 +22,7 @@
 
     - name: Get Bio Sent Model
       shell: |
-        ./start_data_pipeline.sh sync_bio_sent
+        ./start_data_pipeline.sh migrate_sync_bio_sent
       args:
         chdir: /home/ec2-user/reporter_repo
 
