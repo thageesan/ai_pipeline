@@ -13,8 +13,12 @@ if [[ "$*" =~ "migrate_positive_train_samples" ]]; then
   docker-compose run ml.thageesan "python -m ai.data.positive_train_samples ."
 fi
 
-if [[ "$*" =~ "migrate_sync_bio_sent" ]]; then
+if [[ "$*" =~ "migrate_bio_sent" ]]; then
   docker-compose run ml.thageesan "python -m ai.data.sync_bio_sent ."
+fi
+
+if [[ "$*" =~ "download_umlsbert" ]]; then
+  docker-compose run ml.thageesan "python -m ai.data.download_umlsbert ."
 fi
 
 

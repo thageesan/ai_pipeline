@@ -11,3 +11,5 @@ class EInfoCode(Enum):
     I00006 = 'Could not find umlsbert_embed_file_path %s'
     I00007 = 'Google Drive File Download Progress %s'
     I00008 = 'test %s'
+    I00028 = 'File ID: %s'
+    I00029 = 'Folder found: %s'
