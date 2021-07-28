@@ -26,6 +26,8 @@ services:
       - S3_BUCKET_PATH=${S3_BUCKET_PATH}
       - UML_SBERT_MODEL_NAME=${UML_SBERT_MODEL_NAME}
       - UML_SBERT_FOLDER_PATH=${UML_SBERT_FOLDER_PATH}
+      - DATA_FOLDER=${DATA_FOLDER}
+      - EMBED_SNIPPETS_UMLSBERT=${EMBED_SNIPPETS_UMLSBERT}
     volumes:
       - ./data:/app/data
       - ./ai:/app/ai

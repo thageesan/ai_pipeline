@@ -65,3 +65,15 @@ if [[ "$*" =~ "sync_uml_sbert" ]]; then
   -o data/UMLSBert/vocab.txt \
   aws s3 cp s3://ezra-ml-dvc/reporter/UMLSBert  ./data/UMLSBert --recursive
 fi
+
+if [[ "$*" =~ "embed_umlsbert_snippets" ]]; then
+  dvc run -n embed_umlsbert_snippets \
+  -d data/UMLSBert/config.json \
+  -d data/UMLSBert/pytorch_model.bin \
+  -d data/UMLSBert/vocab.txt \
+  -d data/cleaned_snippets_with_org_name_new_rows.csv \
+  -d ai/data/embed_snippets_umlsbert/__init__.py \
+  -d ai/data/embed_snippets_umlsbert/__main__.py \
+  -o data/embed_snippets_umlsbert.parquet \
+  docker-compose run ml.thageesan "python -m ai.data.embed_snippets_umlsbert ."
+fi

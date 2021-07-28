@@ -29,3 +29,15 @@ stages:
     - data/UMLSBert/config.json
     - data/UMLSBert/pytorch_model.bin
     - data/UMLSBert/vocab.txt
+  embed_umlsbert_snippets:
+    cmd: docker-compose run ml.thageesan "python -m ai.data.embed_snippets_umlsbert
+      ."
+    deps:
+    - ai/data/embed_snippets_umlsbert/__init__.py
+    - ai/data/embed_snippets_umlsbert/__main__.py
+    - data/UMLSBert/config.json
+    - data/UMLSBert/pytorch_model.bin
+    - data/UMLSBert/vocab.txt
+    - data/cleaned_snippets_with_org_name_new_rows.csv
+    outs:
+    - data/embed_snippets_umlsbert.parquet

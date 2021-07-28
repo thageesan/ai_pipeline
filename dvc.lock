@@ -54,3 +54,29 @@ stages:
     - path: data/UMLSBert/vocab.txt
       md5: 7f5029172a4e3c1198f13c92bdb06d89
       size: 225062
+  embed_umlsbert_snippets:
+    cmd: docker-compose run ml.thageesan "python -m ai.data.embed_snippets_umlsbert
+      ."
+    deps:
+    - path: ai/data/embed_snippets_umlsbert/__init__.py
+      md5: f3ce3d40b7b37c926ce44bb8f1d350f2
+      size: 2156
+    - path: ai/data/embed_snippets_umlsbert/__main__.py
+      md5: ef1684f8c01bc796d4a6ad1c0b181de0
+      size: 86
+    - path: data/UMLSBert/config.json
+      md5: 1548c9643eaee9881e522896ebc96396
+      size: 605
+    - path: data/UMLSBert/pytorch_model.bin
+      md5: e51a431feca65ed1e7784312cf1af54d
+      size: 438007537
+    - path: data/UMLSBert/vocab.txt
+      md5: 7f5029172a4e3c1198f13c92bdb06d89
+      size: 225062
+    - path: data/cleaned_snippets_with_org_name_new_rows.csv
+      md5: 5376aeada62a4fb140929455ffe52e76
+      size: 799345
+    outs:
+    - path: data/embed_snippets_umlsbert.parquet
+      md5: 0a331a7763ad4e941fa3c1950550809a
+      size: 283861
