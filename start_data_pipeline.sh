@@ -22,6 +22,11 @@ if [[ "$*" =~ "download_umlsbert" ]]; then
 fi
 
 
+if [[ "$*" =~ "migrate_umlsbert" ]]; then
+  docker-compose run ml.thageesan "python -m ai.data.migrate_umlsbert ."
+fi
+
+
 if [[ "$*" =~ "sync_bio_sent" ]]; then
   dvc run -n sync_bio_sent \
   -d s3://ezra-ml-dvc/reporter/bioSent2Vec.bin \
@@ -48,4 +53,15 @@ if [[ "$*" =~ "sync_snippet_database" ]]; then
   -d s3://ezra-ml-dvc/reporter/cleaned_snippets_with_org_name_new_rows.csv \
   -o data/cleaned_snippets_with_org_name_new_rows.csv \
   aws s3 cp s3://ezra-ml-dvc/reporter/cleaned_snippets_with_org_name_new_rows.csv ./data/cleaned_snippets_with_org_name_new_rows.csv
+fi
+
+if [[ "$*" =~ "sync_uml_sbert" ]]; then
+  dvc run -n sync_uml_sbert \
+  -d s3://ezra-ml-dvc/reporter/UMLSBert/config.json \
+  -d s3://ezra-ml-dvc/reporter/UMLSBert/pytorch_model.bin \
+  -d s3://ezra-ml-dvc/reporter/UMLSBert/vocab.txt \
+  -o data/UMLSBert/config.json \
+  -o data/UMLSBert/pytorch_model.bin \
+  -o data/UMLSBert/vocab.txt \
+  aws s3 cp s3://ezra-ml-dvc/reporter/UMLSBert  ./data/UMLSBert --recursive
 fi

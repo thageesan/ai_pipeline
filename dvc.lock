@@ -32,3 +32,25 @@ stages:
     - path: data/cleaned_snippets_with_org_name_new_rows.csv
       md5: 5376aeada62a4fb140929455ffe52e76
       size: 799345
+  sync_uml_sbert:
+    cmd: aws s3 cp s3://ezra-ml-dvc/reporter/UMLSBert ./data/UMLSBert --recursive
+    deps:
+    - path: s3://ezra-ml-dvc/reporter/UMLSBert/config.json
+      etag: 1548c9643eaee9881e522896ebc96396
+      size: 605
+    - path: s3://ezra-ml-dvc/reporter/UMLSBert/pytorch_model.bin
+      etag: f4890ddef1813d95f0b2c3ec7b469d46-53
+      size: 438007537
+    - path: s3://ezra-ml-dvc/reporter/UMLSBert/vocab.txt
+      etag: 7f5029172a4e3c1198f13c92bdb06d89
+      size: 225062
+    outs:
+    - path: data/UMLSBert/config.json
+      md5: 1548c9643eaee9881e522896ebc96396
+      size: 605
+    - path: data/UMLSBert/pytorch_model.bin
+      md5: e51a431feca65ed1e7784312cf1af54d
+      size: 438007537
+    - path: data/UMLSBert/vocab.txt
+      md5: 7f5029172a4e3c1198f13c92bdb06d89
+      size: 225062

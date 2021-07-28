@@ -2,9 +2,10 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
 
 from shared.logger import logger, EInfoCode, EDebugCode
+from shared.tools.os import path, remove
+
 from .mime_type import MimeType
 
-import os
 from io import FileIO
 from sys import exit
 
@@ -21,11 +22,12 @@ class Drive:
         self.__service = build('drive', 'v3', credentials=credentials)
         self.__drive_id = drive_id
 
-    def download(self, file_name, mime_type: MimeType, save_location):
-        save_file_path = os.path.join(save_location, file_name)
+    def download(self, mime_type: MimeType, save_location, file_name=None, file_id=None):
+        save_file_path = path.join(save_location, file_name)
         fh = FileIO(save_file_path, 'wb')
 
-        file_id = self.check_file_exists(file_name=file_name, mime_type=mime_type)
+        if file_id is None:
+            file_id = self.check_file_exists(file_name=file_name, mime_type=mime_type)
 
         request = self.__service.files().get_media(fileId=file_id)
 
@@ -39,7 +41,7 @@ class Drive:
                 logger.info(EInfoCode.I00007.value, str(status.progress() * 100), extra={'code': EInfoCode.I00007.name})
             except Exception:
                 fh.close()
-                os.remove(save_file_path)
+                remove(save_file_path)
                 exit(1)
 
         return save_file_path
@@ -140,3 +142,7 @@ class Drive:
 
     def get_file(self, file_id):
         return self.__service.files().get(fileId=file_id, supportsAllDrives=True).execute()
+
+    def get_files(self, folder_id):
+        results = self.__service.files().list(supportsAllDrives=True, includeItemsFromAllDrives=True, spaces='drive', corpora='allDrives', q="\'" + folder_id + "\'" + " in parents", fields='files(id, name, mimeType)').execute()
+        return results.get('files', [])

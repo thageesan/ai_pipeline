@@ -19,3 +19,13 @@ stages:
     - s3://ezra-ml-dvc/reporter/cleaned_snippets_with_org_name_new_rows.csv
     outs:
     - data/cleaned_snippets_with_org_name_new_rows.csv
+  sync_uml_sbert:
+    cmd: aws s3 cp s3://ezra-ml-dvc/reporter/UMLSBert ./data/UMLSBert --recursive
+    deps:
+    - s3://ezra-ml-dvc/reporter/UMLSBert/config.json
+    - s3://ezra-ml-dvc/reporter/UMLSBert/pytorch_model.bin
+    - s3://ezra-ml-dvc/reporter/UMLSBert/vocab.txt
+    outs:
+    - data/UMLSBert/config.json
+    - data/UMLSBert/pytorch_model.bin
+    - data/UMLSBert/vocab.txt
