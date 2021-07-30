@@ -10,7 +10,9 @@
     rsync_opts:
       - "--exclude=ai"
       - "--exclude=shared"
-      - "--exclude=.dvc"
+      - "--exclude=.dvc/cache"
+      - "--exclude=.dvc/tmp"
       - "--exclude=ansible"
       - "--exclude=.idea"
+      - "--exclude=data"
   become: no

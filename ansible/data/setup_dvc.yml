@@ -35,3 +35,8 @@
 - name: Add pipx to PATH
   shell: |
     python3 -m pipx ensurepath
+
+- name: Insatll dvc[s3]
+  pip:
+    name: dvc[s3]
+    executable: pip3

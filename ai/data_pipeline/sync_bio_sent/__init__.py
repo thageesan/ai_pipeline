@@ -17,7 +17,8 @@ def app():
     print(f'save location: {save_location}')
 
     drive = Drive(drive_id=drive_id, credentials=google_credentials)
-    drive.download(file_name=file_name, mime_type=MimeType.MAC_BINARY.value, save_location=save_location)
+    saved_file_path = drive.download(file_name=file_name, mime_type=MimeType.MAC_BINARY.value,
+                                     save_location=save_location)
     session = Session(aws_secret_access_key=getenv('AWS_SECRET_ACCESS_KEY'),
                       aws_access_key_id=getenv('AWS_ACCESS_KEY_ID'), region_name=getenv('AWS_REGION'))
     s3 = S3(session=session)

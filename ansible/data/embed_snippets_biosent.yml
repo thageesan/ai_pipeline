@@ -20,9 +20,9 @@
   tasks:
     - import_tasks: ./setup_dvc.yml
 
-    - name: Get Bio Sent Model
+    - name: Embed Snippets Biosent
       shell: |
-        ./start_data_pipeline.sh migrate_bio_sent
+        ./start_data_pipeline.sh embed_biosent_snippets
       args:
         chdir: /home/ec2-user/reporter_repo
 

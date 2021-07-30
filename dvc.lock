@@ -55,15 +55,15 @@ stages:
       md5: 7f5029172a4e3c1198f13c92bdb06d89
       size: 225062
   embed_umlsbert_snippets:
-    cmd: docker-compose run ml.thageesan "python -m ai.data.embed_snippets_umlsbert
+    cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_snippets_umlsbert
       ."
     deps:
-    - path: ai/data/embed_snippets_umlsbert/__init__.py
-      md5: f3ce3d40b7b37c926ce44bb8f1d350f2
-      size: 2156
-    - path: ai/data/embed_snippets_umlsbert/__main__.py
-      md5: ef1684f8c01bc796d4a6ad1c0b181de0
-      size: 86
+    - path: ai/data_pipeline/embed_snippets_umlsbert/__init__.py
+      md5: a178f5c558155c07b9bcc643d8dcb4de
+      size: 1966
+    - path: ai/data_pipeline/embed_snippets_umlsbert/__main__.py
+      md5: d0d8170aef7d5d0e5662af9ca9cd4eb0
+      size: 254
     - path: data/UMLSBert/config.json
       md5: 1548c9643eaee9881e522896ebc96396
       size: 605
@@ -80,3 +80,33 @@ stages:
     - path: data/embed_snippets_umlsbert.parquet
       md5: 0a331a7763ad4e941fa3c1950550809a
       size: 283861
+  sync_bio_sent:
+    cmd: aws s3 cp s3://ezra-ml-dvc/reporter/bioSent2Vec.bin ./data/bioSent2Vec.bin
+    deps:
+    - path: s3://ezra-ml-dvc/reporter/bioSent2Vec.bin
+      etag: 9f3ca0f37ada92f6dc6643d59cd51d82-2680
+      size: 22475736490
+    outs:
+    - path: data/bioSent2Vec.bin
+      md5: e0c6c5cf7e4f8e88ec253ee46b461e58
+      size: 22475736490
+  embed_biosent_snippets:
+    cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_snippets_biosent
+      ."
+    deps:
+    - path: ai/data_pipeline/embed_snippets_biosent/__init__.py
+      md5: d80eb032905990061e1a0570f042f42a
+      size: 1781
+    - path: ai/data_pipeline/embed_snippets_biosent/__main__.py
+      md5: 94ac76570d1c72169c160c4b73b57c10
+      size: 252
+    - path: data/bioSent2Vec.bin
+      md5: e0c6c5cf7e4f8e88ec253ee46b461e58
+      size: 22475736490
+    - path: data/cleaned_snippets_with_org_name_new_rows.csv
+      md5: 5376aeada62a4fb140929455ffe52e76
+      size: 799345
+    outs:
+    - path: data/embed_snippets_biosent.parquet
+      md5: 3cd06d870b1b6fc237785305c7239caa
+      size: 248628

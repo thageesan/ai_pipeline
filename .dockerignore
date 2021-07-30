@@ -1,0 +1,14 @@
+.git
+.cache
+*.md
+venv
+venv/**/*
+terraform
+terraform/**/*
+.env
+ansible
+ansible/**/*
+.github
+.env.template
+./**/Dockerfile
+data

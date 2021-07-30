@@ -40,9 +40,19 @@
           - "--exclude=models"
           - "--exclude=data"
           - "--exclude=.coverage"
-          - "--exclude=dvc.yaml"
-          - "--exclude=params.yaml"
+          - "--exclude=.dvc/cache"
+          - "--exclude=.dvc/tmp"
       become: no
+
+    - name: Recursively change ownership of a directory
+      ansible.builtin.file:
+        path: /home/ec2-user/reporter_repo
+        state: directory
+        recurse: yes
+        owner: ec2-user
+        group: ec2-user
+        mode: '0755'
+      become: yes
 
 - hosts: localhost
   gather_facts: false
