@@ -87,3 +87,17 @@ if [[ "$*" =~ "embed_biosent_snippets" ]]; then
   -o data/embed_snippets_biosent.parquet \
   docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_snippets_biosent ."
 fi
+
+if [[ "$*" =~ "generate_training_samples" ]]; then
+  dvc run -n generate_training_samples \
+  -d data/df_positive_w_id_for_train_and_stats.csv \
+  -d data/df_negative_for_train_and_stats.csv \
+  -d ai/data_pipeline/generate_training_samples/__init__.py \
+  -d ai/data_pipeline/generate_training_samples/__main__.py \
+  -o data/training_samples.parquet \
+  docker-compose run ml.thageesan "python -m ai.data_pipeline.generate_training_samples ."
+fi
+
+if [[ "$*" =~ "extract_features" ]]; then
+  docker-compose run ml.thageesan "python -m ai.data_pipeline.feature_extraction ."
+fi

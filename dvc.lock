@@ -59,8 +59,8 @@ stages:
       ."
     deps:
     - path: ai/data_pipeline/embed_snippets_umlsbert/__init__.py
-      md5: a178f5c558155c07b9bcc643d8dcb4de
-      size: 1966
+      md5: 233fafc1540d81445e0bb9ad844d4a5d
+      size: 2345
     - path: ai/data_pipeline/embed_snippets_umlsbert/__main__.py
       md5: d0d8170aef7d5d0e5662af9ca9cd4eb0
       size: 254
@@ -78,8 +78,8 @@ stages:
       size: 799345
     outs:
     - path: data/embed_snippets_umlsbert.parquet
-      md5: 0a331a7763ad4e941fa3c1950550809a
-      size: 283861
+      md5: 1fc157815ff8c01647d71a9355b923f0
+      size: 9961281
   sync_bio_sent:
     cmd: aws s3 cp s3://ezra-ml-dvc/reporter/bioSent2Vec.bin ./data/bioSent2Vec.bin
     deps:
@@ -95,8 +95,8 @@ stages:
       ."
     deps:
     - path: ai/data_pipeline/embed_snippets_biosent/__init__.py
-      md5: d80eb032905990061e1a0570f042f42a
-      size: 1781
+      md5: 3e6354d8540e04295008090b7db112d4
+      size: 2159
     - path: ai/data_pipeline/embed_snippets_biosent/__main__.py
       md5: 94ac76570d1c72169c160c4b73b57c10
       size: 252
@@ -108,5 +108,25 @@ stages:
       size: 799345
     outs:
     - path: data/embed_snippets_biosent.parquet
-      md5: 3cd06d870b1b6fc237785305c7239caa
-      size: 248628
+      md5: cec4459079bbe4b666bbe5aa500527a4
+      size: 9106322
+  generate_training_samples:
+    cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.generate_training_samples
+      ."
+    deps:
+    - path: ai/data_pipeline/generate_training_samples/__init__.py
+      md5: 1ba7442111d94d35a948fa5002b90661
+      size: 3340
+    - path: ai/data_pipeline/generate_training_samples/__main__.py
+      md5: bddc9ff3357bab4ccf6c0218a8cfc36d
+      size: 256
+    - path: data/df_negative_for_train_and_stats.csv
+      md5: f6b1f978f37012919aaefc68fe6e07e7
+      size: 1592506
+    - path: data/df_positive_w_id_for_train_and_stats.csv
+      md5: cb351a0d8e69b4cb263e6265bb5bfff2
+      size: 3761166
+    outs:
+    - path: data/training_samples.parquet
+      md5: a84431c0826a6e5f0299a003730cd25d
+      size: 146951
