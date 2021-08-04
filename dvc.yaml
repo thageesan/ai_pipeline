@@ -67,3 +67,12 @@ stages:
     - data/df_positive_w_id_for_train_and_stats.csv
     outs:
     - data/training_samples.parquet
+  generate_corpus:
+    cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.generate_corpus
+      ."
+    deps:
+    - ai/data_pipeline/generate_corpus/__init__.py
+    - ai/data_pipeline/generate_corpus/__main__.py
+    - data/cleaned_snippets_with_org_name_new_rows.csv
+    outs:
+    - data/corpus.npy

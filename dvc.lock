@@ -130,3 +130,20 @@ stages:
     - path: data/training_samples.parquet
       md5: a84431c0826a6e5f0299a003730cd25d
       size: 146951
+  generate_corpus:
+    cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.generate_corpus
+      ."
+    deps:
+    - path: ai/data_pipeline/generate_corpus/__init__.py
+      md5: baa01d26f85f1866d20edcaaf1ffd52a
+      size: 1139
+    - path: ai/data_pipeline/generate_corpus/__main__.py
+      md5: e7c69f6ce808a6c40dea70161553c93b
+      size: 87
+    - path: data/cleaned_snippets_with_org_name_new_rows.csv
+      md5: 5376aeada62a4fb140929455ffe52e76
+      size: 799345
+    outs:
+    - path: data/corpus.npy
+      md5: e5322ad566d1d16ddf4f36695e072234
+      size: 85060

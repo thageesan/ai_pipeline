@@ -98,6 +98,16 @@ if [[ "$*" =~ "generate_training_samples" ]]; then
   docker-compose run ml.thageesan "python -m ai.data_pipeline.generate_training_samples ."
 fi
 
+if [[ "$*" =~ "generate_corpus" ]]; then
+  dvc run -n generate_corpus \
+  -d data/cleaned_snippets_with_org_name_new_rows.csv \
+  -d ai/data_pipeline/generate_corpus/__init__.py \
+  -d ai/data_pipeline/generate_corpus/__main__.py \
+  -o data/corpus.npy \
+  docker-compose run ml.thageesan "python -m ai.data_pipeline.generate_corpus ."
+fi
+
+
 if [[ "$*" =~ "extract_features" ]]; then
   docker-compose run ml.thageesan "python -m ai.data_pipeline.feature_extraction ."
 fi
