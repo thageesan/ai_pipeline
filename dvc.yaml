@@ -85,3 +85,12 @@ stages:
     - data/training_samples.parquet
     outs:
     - data/embed_finding_umlsbert.parquet
+  embed_biosent_finding:
+    cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_finding_biosent
+      ."
+    deps:
+    - ai/data_pipeline/embed_finding_biosent/__init__.py
+    - ai/data_pipeline/embed_finding_biosent/__main__.py
+    - data/training_samples.parquet
+    outs:
+    - data/embed_finding_biosent.parquet

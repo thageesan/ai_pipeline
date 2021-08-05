@@ -128,8 +128,8 @@ stages:
       size: 3761166
     outs:
     - path: data/training_samples.parquet
-      md5: ef2fb18ccbd001ebdc2f0fb15fe8dee4
-      size: 149127
+      md5: f786a1a0f43a8abdffdca36e2a5e36f5
+      size: 148993
   generate_corpus:
     cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.generate_corpus
       ."
@@ -158,9 +158,26 @@ stages:
       md5: 697fce12999071cf5c64234c3ff6a0c9
       size: 253
     - path: data/training_samples.parquet
-      md5: ef2fb18ccbd001ebdc2f0fb15fe8dee4
-      size: 149127
+      md5: f786a1a0f43a8abdffdca36e2a5e36f5
+      size: 148993
     outs:
     - path: data/embed_finding_umlsbert.parquet
-      md5: 03abcb8cd29c21b74f2511e8809b5068
-      size: 87800434
+      md5: c5bc759fe9815d1974af6ffd7683a11b
+      size: 87831425
+  embed_biosent_finding:
+    cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_finding_biosent
+      ."
+    deps:
+    - path: ai/data_pipeline/embed_finding_biosent/__init__.py
+      md5: 8392193df190259e40ebdcb94d4e9dfa
+      size: 2162
+    - path: ai/data_pipeline/embed_finding_biosent/__main__.py
+      md5: e7a0a2e61bad8a4d0a95b6aa933450fd
+      size: 252
+    - path: data/training_samples.parquet
+      md5: f786a1a0f43a8abdffdca36e2a5e36f5
+      size: 148993
+    outs:
+    - path: data/embed_finding_biosent.parquet
+      md5: b84ef1b0ce89266e77b0072df3c88aff
+      size: 80526054
