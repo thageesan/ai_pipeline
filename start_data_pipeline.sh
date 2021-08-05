@@ -111,3 +111,21 @@ fi
 if [[ "$*" =~ "extract_features" ]]; then
   docker-compose run ml.thageesan "python -m ai.data_pipeline.feature_extraction ."
 fi
+
+if [[ "$*" =~ "embed_umlsbert_finding" ]]; then
+  dvc run -n embed_umlsbert_finding \
+  -d data/training_samples.parquet \
+  -d ai/data_pipeline/embed_finding_umlsbert/__init__.py \
+  -d ai/data_pipeline/embed_finding_umlsbert/__main__.py \
+  -o data/embed_finding_umlsbert.parquet \
+  docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_finding_umlsbert ."
+fi
+
+if [[ "$*" =~ "embed_biosent_finding" ]]; then
+  dvc run -n embed_biosent_finding \
+  -d data/training_samples.parquet \
+  -d ai/data_pipeline/embed_finding_biosent/__init__.py \
+  -d ai/data_pipeline/embed_finding_biosent/__main__.py \
+  -o data/embed_finding_biosent.parquet \
+  docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_finding_biosent ."
+fi

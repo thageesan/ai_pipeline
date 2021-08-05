@@ -11,15 +11,16 @@ from json import loads
 
 def app():
     data_folder = getenv('DATA_FOLDER')
-    embedded_snippets_file_path = getenv('EMBED_SNIPPETS_UMLSBERT_FILE')
-    snippet_file_path = f'{data_folder}/cleaned_snippets_with_org_name_new_rows.csv'
+    training_samples_file_name = getenv('TRAINING_SAMPLES_FILE')
+    embedded_finding_file_path = getenv('EMBED_FINDING_UMLSBERT_FILE')
+    snippet_file_path = f'{data_folder}/{training_samples_file_name}'
 
     embedded_snippets = EmbeddedSentencesUMLSBert()
 
     model_file_path = f'{data_folder}/UMLSBert'
 
     embedded_snippets.embed_sentences(model_file_path=model_file_path, sentence_file_path=snippet_file_path,
-                                      embedded_sentence_file_path=f'{data_folder}/{embedded_snippets_file_path}')
+                                      embedded_sentence_file_path=f'{data_folder}/{embedded_finding_file_path}')
 
 
 class EmbeddedSentencesUMLSBert(EmbeddedSentences):
@@ -30,12 +31,12 @@ class EmbeddedSentencesUMLSBert(EmbeddedSentences):
 
         model = AutoModel.from_pretrained(model_file_path)
 
-        snippets = pd.read_csv(sentence_file_path)
+        snippets = pd.read_parquet(sentence_file_path)
 
-        snippets['title'] = vectorize(clean_sentence)(snippets['Name'])
-        snippets['embedded_snippets'] = vectorize(self.compute_embed)(snippets['title'], tokenizer, model)
+        snippets['title'] = vectorize(clean_sentence)(snippets['finding'])
+        snippets['embedded_finding'] = vectorize(self.compute_embed)(snippets['title'], tokenizer, model)
         snippets = snippets.drop(
-            columns=['Section', 'Organ', 'Name', 'Content', 'Original Name', 'Suggested E-Score']
+            columns=['snippet', 'label']
         )
         snippets = snippets.drop_duplicates()
         snippets.to_parquet(embedded_sentence_file_path)
@@ -48,7 +49,7 @@ class EmbeddedSentencesUMLSBert(EmbeddedSentences):
 
     def load_embedded_sentences(self, embedded_snippets_file_path):
         snippets = pd.read_parquet(embedded_snippets_file_path)
-        snippets = snippets.set_index('title').to_dict()['embedded_snippets']
+        snippets = snippets.set_index('title').to_dict()['embedded_finding']
 
         for key, value in snippets.items():
             string_array = array(loads(value))

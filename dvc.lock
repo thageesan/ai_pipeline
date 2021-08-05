@@ -115,8 +115,8 @@ stages:
       ."
     deps:
     - path: ai/data_pipeline/generate_training_samples/__init__.py
-      md5: 1ba7442111d94d35a948fa5002b90661
-      size: 3340
+      md5: e00de7129b42ebd3b657feedc3e8fff4
+      size: 3341
     - path: ai/data_pipeline/generate_training_samples/__main__.py
       md5: bddc9ff3357bab4ccf6c0218a8cfc36d
       size: 256
@@ -128,15 +128,15 @@ stages:
       size: 3761166
     outs:
     - path: data/training_samples.parquet
-      md5: a84431c0826a6e5f0299a003730cd25d
-      size: 146951
+      md5: ef2fb18ccbd001ebdc2f0fb15fe8dee4
+      size: 149127
   generate_corpus:
     cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.generate_corpus
       ."
     deps:
     - path: ai/data_pipeline/generate_corpus/__init__.py
-      md5: baa01d26f85f1866d20edcaaf1ffd52a
-      size: 1139
+      md5: c43d25f486aacd8af1b467cba665f1e3
+      size: 1116
     - path: ai/data_pipeline/generate_corpus/__main__.py
       md5: e7c69f6ce808a6c40dea70161553c93b
       size: 87
@@ -147,3 +147,20 @@ stages:
     - path: data/corpus.npy
       md5: e5322ad566d1d16ddf4f36695e072234
       size: 85060
+  embed_umlsbert_finding:
+    cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_finding_umlsbert
+      ."
+    deps:
+    - path: ai/data_pipeline/embed_finding_umlsbert/__init__.py
+      md5: 3507e2c260d1923b2f57ed87674e1987
+      size: 2352
+    - path: ai/data_pipeline/embed_finding_umlsbert/__main__.py
+      md5: 697fce12999071cf5c64234c3ff6a0c9
+      size: 253
+    - path: data/training_samples.parquet
+      md5: ef2fb18ccbd001ebdc2f0fb15fe8dee4
+      size: 149127
+    outs:
+    - path: data/embed_finding_umlsbert.parquet
+      md5: 03abcb8cd29c21b74f2511e8809b5068
+      size: 87800434
