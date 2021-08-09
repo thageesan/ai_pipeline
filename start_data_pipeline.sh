@@ -117,10 +117,10 @@ if [[ "$*" =~ "extract_features_for_training" ]]; then
   -d data/embed_snippets_biosent.parquet \
   -d data/embed_numbers_umls.parquet \
   -d data/training_samples.parquet \
-  -d ai/data_pipeline/feature_extraction/training/__init__.py \
-  -d ai/data_pipeline/feature_extraction/training/__main__.py \
-  -o data/feature_extraction_training.parquet \
-  docker-compose run ml.thageesan "python -m ai.data_pipeline.feature_extraction.training ."
+  -d ai/data_pipeline/feature_extraction/__init__.py \
+  -d ai/data_pipeline/feature_extraction/__main__.py \
+  -o data/feature_extraction.parquet \
+  docker-compose run ml.thageesan "python -m ai.data_pipeline.feature_extraction ."
 fi
 
 if [[ "$*" =~ "embed_umlsbert_finding" ]]; then
@@ -148,4 +148,16 @@ if [[ "$*" =~ "embed_number_in_finding" ]]; then
   -d ai/data_pipeline/embed_numbers_umls/__main__.py \
   -o data/embed_numbers_umls.parquet \
   docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_numbers_umls ."
+fi
+
+
+if [[ "$*" =~ "train_test_split" ]]; then
+  dvc run -n train_test_split \
+  -d data/feature_extraction_training.parquet \
+  -d ai/data_pipeline/train_test_split/__init__.py \
+  -d ai/data_pipeline/train_test_split/__main__.py \
+  -o data/training_set.parquet \
+  -o data/testing_set.parquet \
+  -p params.py:TestTrainSetConfig \
+  docker-compose run ml.thageesan "python -m ai.data_pipeline.train_test_split ."
 fi

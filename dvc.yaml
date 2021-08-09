@@ -118,3 +118,16 @@ stages:
     - data/training_samples.parquet
     outs:
     - data/embed_numbers_umls.parquet
+  train_test_split:
+    cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.train_test_split
+      ."
+    deps:
+    - ai/data_pipeline/train_test_split/__init__.py
+    - ai/data_pipeline/train_test_split/__main__.py
+    - data/feature_extraction_training.parquet
+    params:
+    - params.py:
+      - TestTrainSetConfig
+    outs:
+    - data/testing_set.parquet
+    - data/training_set.parquet

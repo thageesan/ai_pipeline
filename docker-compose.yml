@@ -35,7 +35,10 @@ services:
       - EMBED_FINDING_BIOSENT_FILE=${EMBED_FINDING_BIOSENT_FILE}
       - EMBED_NUMBERS_FILE=${EMBED_NUMBERS_FILE}
       - FEATURE_EXTRACTION_FILE=${FEATURE_EXTRACTION_FILE}
+      - TRAINING_SET=${TRAINING_SET}
+      - TESTING_SET=${TESTING_SET}
     volumes:
       - ./data:/app/data
       - ./ai:/app/ai
       - ./shared:/app/shared
+      - ./params.py:/app/params.py

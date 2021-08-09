@@ -268,3 +268,27 @@ stages:
     - path: data/feature_extraction.parquet
       md5: 3ca9e29b94914fa557894437fe257147
       size: 170004
+  train_test_split:
+    cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.train_test_split
+      ."
+    deps:
+    - path: ai/data_pipeline/train_test_split/__init__.py
+      md5: 798a8dce7bda09041f46822faaa380af
+      size: 701
+    - path: ai/data_pipeline/train_test_split/__main__.py
+      md5: 6864810be22611cf7b7b88df3f4e7dc5
+      size: 247
+    - path: data/feature_extraction_training.parquet
+      md5: e9c4e6c553ce6f181cae609c8a514b6e
+      size: 170014
+    params:
+      params.py:
+        TestTrainSetConfig:
+          TEST_SIZE: 0.2
+    outs:
+    - path: data/testing_set.parquet
+      md5: 0cd82ab41952da46f0e8f7a6861579a1
+      size: 53235
+    - path: data/training_set.parquet
+      md5: 9e900d6623c28cf0d6bfd109d4a2120d
+      size: 180806
