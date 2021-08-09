@@ -9,7 +9,7 @@ import torch
 
 
 def app():
-    model_name = getenv('UML_SBERT_MODEL_NAME')
+    model_name = getenv('UMLS_MODEL_NAME')
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModel.from_pretrained(model_name)
 

@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
 
 
-class EmbeddedSentences(ABC):
+class SentenceEmbedder(ABC):
     special_tokens_dict = {'additional_special_tokens': ['xxx']}
 
     def __init__(self):
         pass
 
     @abstractmethod
-    def embed_sentences(self, model_file_path, sentence_file_path, embedded_sentence_file_path):
+    def embed_sentences(self, **kwargs):
         pass
 
     @abstractmethod

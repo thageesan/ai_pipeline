@@ -1,29 +1,29 @@
 #!/bin/bash
 
 if [[ "$*" =~ "migrate_snippet_database" ]]; then
-  docker-compose run ml.thageesan "python -m ai.data_pipeline.snippet_database ."
+  docker-compose run ml.thageesan "python -m ai.migration.snippet_database ."
 fi
 
 if [[ "$*" =~ "migrate_negative_train_samples" ]]; then
-  docker-compose run ml.thageesan "python -m ai.data_pipeline.negative_train_samples ."
+  docker-compose run ml.thageesan "python -m ai.migration.negative_train_samples ."
 fi
 
 
 if [[ "$*" =~ "migrate_positive_train_samples" ]]; then
-  docker-compose run ml.thageesan "python -m ai.data_pipeline.positive_train_samples ."
+  docker-compose run ml.thageesan "python -m ai.migration.positive_train_samples ."
 fi
 
 if [[ "$*" =~ "migrate_bio_sent" ]]; then
-  docker-compose run ml.thageesan "python -m ai.data_pipeline.sync_bio_sent ."
+  docker-compose run ml.thageesan "python -m ai.migration.sync_bio_sent ."
 fi
 
 if [[ "$*" =~ "download_umlsbert" ]]; then
-  docker-compose run ml.thageesan "python -m ai.data_pipeline.download_umlsbert ."
+  docker-compose run ml.thageesan "python -m ai.migration.download_umlsbert ."
 fi
 
 
 if [[ "$*" =~ "migrate_umlsbert" ]]; then
-  docker-compose run ml.thageesan "python -m ai.data_pipeline.migrate_umlsbert ."
+  docker-compose run ml.thageesan "python -m ai.migration.migrate_umlsbert ."
 fi
 
 
@@ -60,10 +60,10 @@ if [[ "$*" =~ "sync_uml_sbert" ]]; then
   -d s3://ezra-ml-dvc/reporter/UMLSBert/config.json \
   -d s3://ezra-ml-dvc/reporter/UMLSBert/pytorch_model.bin \
   -d s3://ezra-ml-dvc/reporter/UMLSBert/vocab.txt \
-  -o data/UMLSBert/config.json \
-  -o data/UMLSBert/pytorch_model.bin \
-  -o data/UMLSBert/vocab.txt \
-  aws s3 cp s3://ezra-ml-dvc/reporter/UMLSBert  ./data/UMLSBert --recursive
+  -o data/UMLS/config.json \
+  -o data/UMLS/pytorch_model.bin \
+  -o data/UMLS/vocab.txt \
+  aws s3 cp s3://ezra-ml-dvc/reporter/UMLSBert  ./data/UMLS --recursive
 fi
 
 if [[ "$*" =~ "embed_umlsbert_snippets" ]]; then
@@ -74,7 +74,7 @@ if [[ "$*" =~ "embed_umlsbert_snippets" ]]; then
   -d data/cleaned_snippets_with_org_name_new_rows.csv \
   -d ai/data_pipeline/embed_snippets_umlsbert/__init__.py \
   -d ai/data_pipeline/embed_snippets_umlsbert/__main__.py \
-  -o data/embed_snippets_umlsbert.parquet \
+  -o data/embed_snippets_umls.parquet \
   docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_snippets_umlsbert ."
 fi
 
@@ -108,8 +108,19 @@ if [[ "$*" =~ "generate_corpus" ]]; then
 fi
 
 
-if [[ "$*" =~ "extract_features" ]]; then
-  docker-compose run ml.thageesan "python -m ai.data_pipeline.feature_extraction ."
+if [[ "$*" =~ "extract_features_for_training" ]]; then
+  dvc run -n extract_features_for_training \
+  -d data/corpus.npy \
+  -d data/embed_finding_umls.parquet \
+  -d data/embed_finding_biosent.parquet \
+  -d data/embed_snippets_umls.parquet \
+  -d data/embed_snippets_biosent.parquet \
+  -d data/embed_numbers_umls.parquet \
+  -d data/training_samples.parquet \
+  -d ai/data_pipeline/feature_extraction/training/__init__.py \
+  -d ai/data_pipeline/feature_extraction/training/__main__.py \
+  -o data/feature_extraction_training.parquet \
+  docker-compose run ml.thageesan "python -m ai.data_pipeline.feature_extraction.training ."
 fi
 
 if [[ "$*" =~ "embed_umlsbert_finding" ]]; then
@@ -117,7 +128,7 @@ if [[ "$*" =~ "embed_umlsbert_finding" ]]; then
   -d data/training_samples.parquet \
   -d ai/data_pipeline/embed_finding_umlsbert/__init__.py \
   -d ai/data_pipeline/embed_finding_umlsbert/__main__.py \
-  -o data/embed_finding_umlsbert.parquet \
+  -o data/embed_finding_umls.parquet \
   docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_finding_umlsbert ."
 fi
 
@@ -128,4 +139,13 @@ if [[ "$*" =~ "embed_biosent_finding" ]]; then
   -d ai/data_pipeline/embed_finding_biosent/__main__.py \
   -o data/embed_finding_biosent.parquet \
   docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_finding_biosent ."
+fi
+
+if [[ "$*" =~ "embed_number_in_finding" ]]; then
+  dvc run -n embed_number_in_finding \
+  -d data/training_samples.parquet \
+  -d ai/data_pipeline/embed_numbers_umls/__init__.py \
+  -d ai/data_pipeline/embed_numbers_umls/__main__.py \
+  -o data/embed_numbers_umls.parquet \
+  docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_numbers_umls ."
 fi

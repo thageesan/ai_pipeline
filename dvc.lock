@@ -33,7 +33,7 @@ stages:
       md5: 5376aeada62a4fb140929455ffe52e76
       size: 799345
   sync_uml_sbert:
-    cmd: aws s3 cp s3://ezra-ml-dvc/reporter/UMLSBert ./data/UMLSBert --recursive
+    cmd: aws s3 cp s3://ezra-ml-dvc/reporter/UMLSBert ./data/UMLS --recursive
     deps:
     - path: s3://ezra-ml-dvc/reporter/UMLSBert/config.json
       etag: 1548c9643eaee9881e522896ebc96396
@@ -45,13 +45,13 @@ stages:
       etag: 7f5029172a4e3c1198f13c92bdb06d89
       size: 225062
     outs:
-    - path: data/UMLSBert/config.json
+    - path: data/UMLS/config.json
       md5: 1548c9643eaee9881e522896ebc96396
       size: 605
-    - path: data/UMLSBert/pytorch_model.bin
+    - path: data/UMLS/pytorch_model.bin
       md5: e51a431feca65ed1e7784312cf1af54d
       size: 438007537
-    - path: data/UMLSBert/vocab.txt
+    - path: data/UMLS/vocab.txt
       md5: 7f5029172a4e3c1198f13c92bdb06d89
       size: 225062
   embed_umlsbert_snippets:
@@ -59,27 +59,27 @@ stages:
       ."
     deps:
     - path: ai/data_pipeline/embed_snippets_umlsbert/__init__.py
-      md5: 233fafc1540d81445e0bb9ad844d4a5d
-      size: 2345
+      md5: b1d00420369b4cf9dd76324501679f1e
+      size: 2415
     - path: ai/data_pipeline/embed_snippets_umlsbert/__main__.py
       md5: d0d8170aef7d5d0e5662af9ca9cd4eb0
       size: 254
-    - path: data/UMLSBert/config.json
+    - path: data/UMLS/config.json
       md5: 1548c9643eaee9881e522896ebc96396
       size: 605
-    - path: data/UMLSBert/pytorch_model.bin
+    - path: data/UMLS/pytorch_model.bin
       md5: e51a431feca65ed1e7784312cf1af54d
       size: 438007537
-    - path: data/UMLSBert/vocab.txt
+    - path: data/UMLS/vocab.txt
       md5: 7f5029172a4e3c1198f13c92bdb06d89
       size: 225062
-    - path: data/cleaned_snippets_with_org_name_new_rows.csv
-      md5: 5376aeada62a4fb140929455ffe52e76
-      size: 799345
+    - path: data/training_samples.parquet
+      md5: f786a1a0f43a8abdffdca36e2a5e36f5
+      size: 148993
     outs:
-    - path: data/embed_snippets_umlsbert.parquet
-      md5: 1fc157815ff8c01647d71a9355b923f0
-      size: 9961281
+    - path: data/embed_snippets_umls.parquet
+      md5: 5d5411f76f66ba398447384d76cfb7e9
+      size: 66006966
   sync_bio_sent:
     cmd: aws s3 cp s3://ezra-ml-dvc/reporter/bioSent2Vec.bin ./data/bioSent2Vec.bin
     deps:
@@ -95,21 +95,21 @@ stages:
       ."
     deps:
     - path: ai/data_pipeline/embed_snippets_biosent/__init__.py
-      md5: 3e6354d8540e04295008090b7db112d4
-      size: 2159
+      md5: e26684e82dd154de4ac73db22e2c15af
+      size: 2167
     - path: ai/data_pipeline/embed_snippets_biosent/__main__.py
       md5: 94ac76570d1c72169c160c4b73b57c10
       size: 252
     - path: data/bioSent2Vec.bin
       md5: e0c6c5cf7e4f8e88ec253ee46b461e58
       size: 22475736490
-    - path: data/cleaned_snippets_with_org_name_new_rows.csv
-      md5: 5376aeada62a4fb140929455ffe52e76
-      size: 799345
+    - path: data/training_samples.parquet
+      md5: f786a1a0f43a8abdffdca36e2a5e36f5
+      size: 148993
     outs:
     - path: data/embed_snippets_biosent.parquet
-      md5: cec4459079bbe4b666bbe5aa500527a4
-      size: 9106322
+      md5: adf465e4748ca9ca1ee1b0c72f02d74b
+      size: 60191575
   generate_training_samples:
     cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.generate_training_samples
       ."
@@ -152,8 +152,8 @@ stages:
       ."
     deps:
     - path: ai/data_pipeline/embed_finding_umlsbert/__init__.py
-      md5: 3507e2c260d1923b2f57ed87674e1987
-      size: 2352
+      md5: 0f8977c8e5cbaf5bc993fe6d66888096
+      size: 2630
     - path: ai/data_pipeline/embed_finding_umlsbert/__main__.py
       md5: 697fce12999071cf5c64234c3ff6a0c9
       size: 253
@@ -161,7 +161,7 @@ stages:
       md5: f786a1a0f43a8abdffdca36e2a5e36f5
       size: 148993
     outs:
-    - path: data/embed_finding_umlsbert.parquet
+    - path: data/embed_finding_umls.parquet
       md5: c5bc759fe9815d1974af6ffd7683a11b
       size: 87831425
   embed_biosent_finding:
@@ -169,8 +169,8 @@ stages:
       ."
     deps:
     - path: ai/data_pipeline/embed_finding_biosent/__init__.py
-      md5: 8392193df190259e40ebdcb94d4e9dfa
-      size: 2162
+      md5: 007381dd3147d72d268e9e53187aa52a
+      size: 2158
     - path: ai/data_pipeline/embed_finding_biosent/__main__.py
       md5: e7a0a2e61bad8a4d0a95b6aa933450fd
       size: 252
@@ -181,3 +181,90 @@ stages:
     - path: data/embed_finding_biosent.parquet
       md5: b84ef1b0ce89266e77b0072df3c88aff
       size: 80526054
+  embed_number_in_finding:
+    cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_numbers_umls
+      ."
+    deps:
+    - path: ai/data_pipeline/embed_numbers_umls/__init__.py
+      md5: 63222a8f8b1efcd9f897306758d43e07
+      size: 1807
+    - path: ai/data_pipeline/embed_numbers_umls/__main__.py
+      md5: 7b27e85644eb3c496cfa3d1c8aa79bfd
+      size: 249
+    - path: data/training_samples.parquet
+      md5: f786a1a0f43a8abdffdca36e2a5e36f5
+      size: 148993
+    outs:
+    - path: data/embed_numbers_umls.parquet
+      md5: 7e761d64d2fbcb369edddf0033acd27c
+      size: 1796642
+  extract_features_for_training:
+    cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.feature_extraction.training
+      ."
+    deps:
+    - path: ai/data_pipeline/feature_extraction/training/__init__.py
+      md5: 0c2ffdec99eadf67b94d0ac4b958adce
+      size: 5466
+    - path: ai/data_pipeline/feature_extraction/training/__main__.py
+      md5: dcc9cac4893d68c135b49723816bd195
+      size: 258
+    - path: data/corpus.npy
+      md5: e5322ad566d1d16ddf4f36695e072234
+      size: 85060
+    - path: data/embed_finding_biosent.parquet
+      md5: b84ef1b0ce89266e77b0072df3c88aff
+      size: 80526054
+    - path: data/embed_finding_umls.parquet
+      md5: c5bc759fe9815d1974af6ffd7683a11b
+      size: 87831425
+    - path: data/embed_numbers_umls.parquet
+      md5: 7e761d64d2fbcb369edddf0033acd27c
+      size: 1796642
+    - path: data/embed_snippets_biosent.parquet
+      md5: adf465e4748ca9ca1ee1b0c72f02d74b
+      size: 60191575
+    - path: data/embed_snippets_umls.parquet
+      md5: 5d5411f76f66ba398447384d76cfb7e9
+      size: 66006966
+    - path: data/training_samples.parquet
+      md5: f786a1a0f43a8abdffdca36e2a5e36f5
+      size: 148993
+    outs:
+    - path: data/feature_extraction_training.parquet
+      md5: e9c4e6c553ce6f181cae609c8a514b6e
+      size: 170014
+  extract_features:
+    cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.feature_extraction
+      ."
+    deps:
+    - path: ai/data_pipeline/feature_extraction/__init__.py
+      md5: 92a87825284c8828dec1583f162d0592
+      size: 5457
+    - path: ai/data_pipeline/feature_extraction/__main__.py
+      md5: ec5289084b09a6a810e602883cd438ec
+      size: 249
+    - path: data/corpus.npy
+      md5: e5322ad566d1d16ddf4f36695e072234
+      size: 85060
+    - path: data/embed_finding_biosent.parquet
+      md5: b84ef1b0ce89266e77b0072df3c88aff
+      size: 80526054
+    - path: data/embed_finding_umls.parquet
+      md5: c5bc759fe9815d1974af6ffd7683a11b
+      size: 87831425
+    - path: data/embed_numbers_umls.parquet
+      md5: 7e761d64d2fbcb369edddf0033acd27c
+      size: 1796642
+    - path: data/embed_snippets_biosent.parquet
+      md5: adf465e4748ca9ca1ee1b0c72f02d74b
+      size: 60191575
+    - path: data/embed_snippets_umls.parquet
+      md5: 5d5411f76f66ba398447384d76cfb7e9
+      size: 66006966
+    - path: data/training_samples.parquet
+      md5: f786a1a0f43a8abdffdca36e2a5e36f5
+      size: 148993
+    outs:
+    - path: data/feature_extraction.parquet
+      md5: 3ca9e29b94914fa557894437fe257147
+      size: 170004

@@ -10,7 +10,7 @@ def app():
     drive_id = getenv('GDRIVE_ID')
     key = getenv('GOOGLE_SERVICE_ACCOUNT_KF_DICT')
     google_credentials = get_google_credentials(key)
-    folder_name = getenv('UML_SBERT_FOLDER_PATH')
+    folder_name = getenv('UMLS_FOLDER_PATH')
     save_location = '/tmp'
     bucket_name = getenv('S3_BUCKET')
     bucket_path = getenv('S3_BUCKET_PATH')

@@ -1,4 +1,4 @@
-from shared.embed_sentences import EmbeddedSentences
+from shared.embed_sentences import SentenceEmbedder
 from shared.tools.os import getenv
 from shared.tools.utils import pd
 from shared.tools.utils.text import clean_sentence, convert_num_to_words
@@ -24,7 +24,7 @@ def app():
                                       embedded_sentence_file_path=f'{data_folder}/{embedded_finding_file_path}')
 
 
-class EmbeddedFindingBioSent(EmbeddedSentences):
+class EmbeddedFindingBioSent(SentenceEmbedder):
 
     def embed_sentences(self, model_file_path, sentence_file_path, embedded_sentence_file_path):
         model = Sent2vecModel()
@@ -44,8 +44,8 @@ class EmbeddedFindingBioSent(EmbeddedSentences):
         string = convert_num_to_words(string)
         return str(model.embed_sentence(string).tolist())
 
-    def load_embedded_sentences(self, embedded_snippets_file_path):
-        snippets = pd.read_parquet(embedded_snippets_file_path)
+    def load_embedded_sentences(self, embedded_finding_file_path):
+        snippets = pd.read_parquet(embedded_finding_file_path)
         snippets = snippets.set_index('title').to_dict()['embedded_finding']
 
         for key, value in snippets.items():

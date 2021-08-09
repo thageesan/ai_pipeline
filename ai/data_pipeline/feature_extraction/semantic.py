@@ -1,11 +1,8 @@
 import re
 
-from functools import lru_cache
 from gensim.corpora.dictionary import Dictionary
 import numpy as np
 from pyemd import emd
-from sent2vec import Sent2vecModel
-from transformers import AutoModel, AutoTokenizer
 
 from shared.tools.utils.text import convert_num_to_words
 
@@ -17,23 +14,17 @@ class SemanticBasedFeatures:
     using word mover's distance
     """
 
-    def __init__(self):
+    def __init__(self, embedded_biosent_snippets, embedded_umlsbert_snippets, embedded_biosent_finding, embedded_umlsbert_finding, embedded_numbers_umlsbert):
 
-        self.biosent2vec_model = Sent2vecModel()
-        self.biosent2vec_model.load_model(model_path)
+        self.embed_biosent_snippets = embedded_biosent_snippets
 
-        self.snippets_biosent2vec_embed = snippets_biosent2vec_embed
+        self.embed_biosent2vec_findings = embedded_biosent_finding
 
-        self.umlsbert_model = AutoModel.from_pretrained('GanjinZero/UMLSBert_ENG')
+        self.embed_umlsbert_snippets = embedded_umlsbert_snippets
 
-        self.umlsbert_tokenizer = AutoTokenizer.from_pretrained('GanjinZero/UMLSBert_ENG')
+        self.embed_umlsbert_findings = embedded_umlsbert_finding
 
-        special_tokens_dict = {'additional_special_tokens': ['xxx']}
-
-        self.umlsbert_tokenizer.add_special_tokens(special_tokens_dict)
-        self.umlsbert_model.resize_token_embeddings(len(self.umlsbert_tokenizer))
-
-        self.snippets_umlsbert_embed = snippets_umlsbert_embed
+        self.embedded_numbers_umlsbert = embedded_numbers_umlsbert
 
     # used
     def compute_wmd_score(self, string1, string2):
@@ -51,8 +42,8 @@ class SemanticBasedFeatures:
                 if t1 not in docset1 or t2 not in docset2:
                     continue
                 # Compute Euclidean distance between word vectors.
-                t1_embed = self.compute_umls_bert_embed(t1)
-                t2_embed = self.compute_umls_bert_embed(t2)
+                t1_embed = self.embedded_numbers_umlsbert[t1]
+                t2_embed = self.embedded_numbers_umlsbert[t2]
                 normalized_embed_t1 = t1_embed / t1_embed.sum()
                 normalized_embed_t2 = t2_embed / t2_embed.sum()
                 distance_matrix[i, j] = np.sqrt(np.sum((normalized_embed_t1 - normalized_embed_t2) ** 2))
@@ -90,32 +81,18 @@ class SemanticBasedFeatures:
         return np.mean(wmd_scores)
 
     # used
-    @lru_cache(maxsize=100)
-    def compute_biosent2vec_embed(self, string):
-        string = convert_num_to_words(string=string)
-        return self.biosent2vec_model.embed_sentence(string)
-
-    # used
     def compute_biosent2vec_similarity(self, string1, string2):
-        string1_embed = self.compute_biosent2vec_embed(string1)
-        string2_embed = self.snippets_biosent2vec_embed[string2]
+        string1_embed = self.embed_biosent2vec_findings[string1]
+        string2_embed = self.embed_biosent_snippets[string2]
         biosent2vec_similarity = np.dot(np.squeeze(string1_embed), np.squeeze(string2_embed)) / (
-                np.norm(string1_embed) * np.norm(string2_embed))
+                np.linalg.norm(string1_embed) * np.linalg.norm(string2_embed))
         return np.round(biosent2vec_similarity, 3)
 
     # used
-    @lru_cache(maxsize=100)
-    def compute_umls_bert_embed(self, string):
-        string = convert_num_to_words(string=string)
-        inputs = self.umlsbert_tokenizer(string, return_tensors='pt')
-        return self.umlsbert_model(**inputs).last_hidden_state[0][0].detach().numpy()
-
-    # used
     def compute_umlsbert_similarity(self, string1, string2):
-        string1_embed = self.compute_umls_bert_embed(string1)
-
-        string2_embed = self.snippets_umlsbert_embed[string2]
-        umlsbert_similarity = np.dot(string1_embed, string2_embed) / (np.norm(string1_embed) * np.norm(string2_embed))
+        string1_embed = self.embed_umlsbert_findings[string1]
+        string2_embed = self.embed_umlsbert_snippets[string2]
+        umlsbert_similarity = np.dot(string1_embed, string2_embed) / (np.linalg.norm(string1_embed) * np.linalg.norm(string2_embed))
         return np.round(umlsbert_similarity, 3)
 
     # used

@@ -1,4 +1,4 @@
-from shared.embed_sentences import EmbeddedSentences
+from shared.embed_sentences import SentenceEmbedder
 from shared.tools.os import getenv
 from shared.tools.utils import pd
 from shared.tools.utils.text import clean_sentence, convert_num_to_words
@@ -11,18 +11,20 @@ from json import loads
 
 def app():
     data_folder = getenv('DATA_FOLDER')
+    training_samples_file_name = getenv('TRAINING_SAMPLES_FILE')
+    model_folder_name = getenv('UMLS_FOLDER_PATH')
     embedded_snippets_file_path = getenv('EMBED_SNIPPETS_UMLSBERT_FILE')
-    snippet_file_path = f'{data_folder}/cleaned_snippets_with_org_name_new_rows.csv'
+    snippet_file_path = f'{data_folder}/{training_samples_file_name}'
 
-    embedded_snippets = EmbeddedSentencesUMLSBert()
+    embedded_snippets = EmbeddedSnippetsUMLSBert()
 
-    model_file_path = f'{data_folder}/UMLSBert'
+    model_file_path = f'{data_folder}/{model_folder_name}'
 
     embedded_snippets.embed_sentences(model_file_path=model_file_path, sentence_file_path=snippet_file_path,
                                       embedded_sentence_file_path=f'{data_folder}/{embedded_snippets_file_path}')
 
 
-class EmbeddedSentencesUMLSBert(EmbeddedSentences):
+class EmbeddedSnippetsUMLSBert(SentenceEmbedder):
 
     def embed_sentences(self, model_file_path, sentence_file_path, embedded_sentence_file_path):
         tokenizer = AutoTokenizer.from_pretrained(model_file_path)
@@ -30,12 +32,12 @@ class EmbeddedSentencesUMLSBert(EmbeddedSentences):
 
         model = AutoModel.from_pretrained(model_file_path)
 
-        snippets = pd.read_csv(sentence_file_path)
+        snippets = pd.read_parquet(sentence_file_path)
 
-        snippets['title'] = vectorize(clean_sentence)(snippets['Name'])
+        snippets['title'] = vectorize(clean_sentence)(snippets['snippet'])
         snippets['embedded_snippets'] = vectorize(self.compute_embed)(snippets['title'], tokenizer, model)
         snippets = snippets.drop(
-            columns=['Section', 'Organ', 'Name', 'Content', 'Original Name', 'Suggested E-Score']
+            columns=['finding', 'label']
         )
         snippets = snippets.drop_duplicates()
         snippets.to_parquet(embedded_sentence_file_path)

@@ -1,4 +1,4 @@
-from ai.data_pipeline.migrate_team_drive_file_s3 import app
+from ai.migration.migrate_team_drive_file_s3 import app
 
 import argparse
 
