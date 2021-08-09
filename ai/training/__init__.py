@@ -1,41 +1,42 @@
-from ai.data import app as data_wrangling_app
+from shared.tools.os import getenv
+from shared.tools.utils import pd
 
-
-def train_xgb(X, y, xgb_params=None):
-    """
-    Fits an xgboost model on the data
-
-    Args:
-        X(array): training numpy array
-        y(array): labels
-        xgb_params(dict): params for the xgb model which mostly are from the grid search findings
-
-    Returns:
-        xgb: trained model
-    """
-    if not xgb_params:
-        xgb_params = {
-            "subsample": 0.8,
-            "n_estimators": 500,
-            "min_child_weight": 5,
-            "max_depth": 6,
-            "learning_rate": 0.1,
-            "gamma": 2,
-            "colsample_bytree": 0.8,
-            "alpha": 5,
-            "eval_metric": "auc",
-            "objective": "binary:logistic",
-            "use_label_encoder": False
-        }
-
-    # xgb = xgboost.XGBClassifier(**xgb_params)
-    # xgb.fit(X, y)
-    # return xgb
+from numpy import array
+from params import XGBTrainConfig
+from xgboost import XGBClassifier
+from joblib import dump
 
 
 def app():
-    corpus, data_frame = data_wrangling_app()
+    """
+    Fits an xgboost model using training data.
+    Returns:
 
+    """
+    xgb_params = {
+        "subsample": XGBTrainConfig.subsample,
+        "n_estimators": XGBTrainConfig.n_estimators,
+        "min_child_weight": XGBTrainConfig.min_child_weight,
+        "max_depth": XGBTrainConfig.max_depth,
+        "learning_rate": XGBTrainConfig.learning_rate,
+        "gamma": XGBTrainConfig.gamma,
+        "colsample_bytree": XGBTrainConfig.colsample_bytree,
+        "alpha": XGBTrainConfig.alpha,
+        "eval_metric": XGBTrainConfig.eval_metric,
+        "objective": XGBTrainConfig.objective,
+        "use_label_encoder": XGBTrainConfig.use_label_encoder,
+    }
 
-if __name__ == '__main__':
-    app()
+    # load training set
+    model_path = getenv('DATA_FOLDER')
+    model_file_name = getenv('MODEL_FILE_NAME')
+    training_set_file_name = getenv('TRAINING_SET')
+    data_frame = pd.read_parquet(f'{model_path}/{training_set_file_name}')
+
+    x = array(data_frame['x'].tolist())
+    y = data_frame['y'].to_numpy()
+
+    xgb = XGBClassifier(**xgb_params)
+    model = xgb.fit(x, y)
+
+    dump(model, f'{model_path}/{model_file_name}')

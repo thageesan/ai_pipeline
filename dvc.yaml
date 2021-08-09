@@ -131,3 +131,14 @@ stages:
     outs:
     - data/testing_set.parquet
     - data/training_set.parquet
+  train_model:
+    cmd: docker-compose run ml.thageesan "python -m ai.training ."
+    deps:
+    - ai/training/__init__.py
+    - ai/training/__main__.py
+    - data/training_set.parquet
+    params:
+    - params.py:
+      - XGBTrainConfig
+    outs:
+    - data/xgb.model

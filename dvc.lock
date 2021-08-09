@@ -292,3 +292,33 @@ stages:
     - path: data/training_set.parquet
       md5: 9e900d6623c28cf0d6bfd109d4a2120d
       size: 180806
+  train_model:
+    cmd: docker-compose run ml.thageesan "python -m ai.training ."
+    deps:
+    - path: ai/training/__init__.py
+      md5: 27e8ed32da413cf69e40f01b44fbe466
+      size: 1296
+    - path: ai/training/__main__.py
+      md5: 9c780328b11074dd3936ea268a56e93d
+      size: 225
+    - path: data/training_set.parquet
+      md5: 9e900d6623c28cf0d6bfd109d4a2120d
+      size: 180806
+    params:
+      params.py:
+        XGBTrainConfig:
+          subsample: 0.8
+          n_estimators: 500
+          min_child_weight: 5
+          max_depth: 6
+          learning_rate: 0.1
+          gamma: 2
+          colsample_bytree: 0.8
+          alpha: 5
+          eval_metric: auc
+          objective: binary:logistic
+          use_label_encoder: false
+    outs:
+    - path: data/xgb.model
+      md5: f35ab17756cd28ec9695a23debc2244a
+      size: 1840189
