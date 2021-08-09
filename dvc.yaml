@@ -124,7 +124,7 @@ stages:
     deps:
     - ai/data_pipeline/train_test_split/__init__.py
     - ai/data_pipeline/train_test_split/__main__.py
-    - data/feature_extraction_training.parquet
+    - data/feature_extraction.parquet
     params:
     - params.py:
       - TestTrainSetConfig
@@ -142,3 +142,12 @@ stages:
       - XGBTrainConfig
     outs:
     - data/xgb.model
+  test_model:
+    cmd: docker-compose run ml.thageesan "python -m ai.test ."
+    deps:
+    - ai/test/__init__.py
+    - ai/test/__main__.py
+    - data/testing_set.parquet
+    metrics:
+    - data/metrics/test_results.json:
+        cache: false

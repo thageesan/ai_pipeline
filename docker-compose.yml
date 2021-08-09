@@ -38,6 +38,8 @@ services:
       - TRAINING_SET=${TRAINING_SET}
       - TESTING_SET=${TESTING_SET}
       - MODEL_FILE_NAME=${MODEL_FILE_NAME}
+      - TEST_METRIC_FILE_NAME=${TEST_METRIC_FILE_NAME}
+      - METRICS_FOLDER=${METRICS_FOLDER}
     volumes:
       - ./data:/app/data
       - ./ai:/app/ai

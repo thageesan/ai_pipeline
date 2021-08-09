@@ -171,3 +171,12 @@ if [[ "$*" =~ "train_model" ]]; then
   -p params.py:XGBTrainConfig \
   docker-compose run ml.thageesan "python -m ai.training ."
 fi
+
+if [[ "$*" =~ "test_model" ]]; then
+  dvc run -n test_model \
+  -d data/testing_set.parquet \
+  -d ai/test/__init__.py \
+  -d ai/test/__main__.py \
+  -M data/metrics/test_results.json \
+  docker-compose run ml.thageesan "python -m ai.test ."
+fi
