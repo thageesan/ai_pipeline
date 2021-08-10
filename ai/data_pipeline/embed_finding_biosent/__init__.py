@@ -1,3 +1,5 @@
+from params import BIOSENT_FILE_NAME
+
 from shared.embed_sentences import SentenceEmbedder
 from shared.tools.os import getenv
 from shared.tools.utils import pd
@@ -17,7 +19,7 @@ def app():
 
     embedded_snippets = EmbeddedFindingBioSent()
 
-    model_file_name = getenv('BIO_SENT_FILE')
+    model_file_name = BIOSENT_FILE_NAME
 
     model_file_path = f'{data_folder}/{model_file_name}'
     embedded_snippets.embed_sentences(model_file_path=model_file_path, sentence_file_path=snippet_file_path,

@@ -1,3 +1,8 @@
+BIOSENT_FILE_NAME = 'bioSent2Vec.bin'
+
+UMLS_MODEL_NAME = 'GanjinZero/UMLSBert_ENG'
+
+
 class TestTrainSetConfig:
     TEST_SIZE = 0.2
 

@@ -29,9 +29,11 @@ fi
 
 if [[ "$*" =~ "sync_bio_sent" ]]; then
   dvc run -n sync_bio_sent \
-  -d s3://ezra-ml-dvc/reporter/bioSent2Vec.bin \
+  -d ai/migration/sync_bio_sent/__init__.py \
+  -d ai/migration/sync_bio_sent/__main__.py \
   -o data/bioSent2Vec.bin \
-  aws s3 cp s3://ezra-ml-dvc/reporter/bioSent2Vec.bin ./data/bioSent2Vec.bin
+  -p params.py:BIOSENT_FILE_NAME \
+  docker-compose run ml.thageesan "python -m ai.migration.sync_bio_sent ."
 fi
 
 if [[ "$*" =~ "sync_negative_train_samples" ]]; then
@@ -57,13 +59,13 @@ fi
 
 if [[ "$*" =~ "sync_uml_sbert" ]]; then
   dvc run -n sync_uml_sbert \
-  -d s3://ezra-ml-dvc/reporter/UMLSBert/config.json \
-  -d s3://ezra-ml-dvc/reporter/UMLSBert/pytorch_model.bin \
-  -d s3://ezra-ml-dvc/reporter/UMLSBert/vocab.txt \
+  -d ai/migration/download_umlsbert/__init__.py \
+  -d ai/migration/download_umlsbert/__main__.py \
   -o data/UMLS/config.json \
   -o data/UMLS/pytorch_model.bin \
   -o data/UMLS/vocab.txt \
-  aws s3 cp s3://ezra-ml-dvc/reporter/UMLSBert  ./data/UMLS --recursive
+  -p params.py:UMLS_MODEL_NAME \
+  docker-compose run ml.thageesan "python -m ai.migration.download_umlsbert ."
 fi
 
 if [[ "$*" =~ "embed_umlsbert_snippets" ]]; then
@@ -80,11 +82,11 @@ fi
 
 if [[ "$*" =~ "embed_biosent_snippets" ]]; then
   dvc run -n embed_biosent_snippets \
-  -d data/bioSent2Vec.bin \
   -d data/cleaned_snippets_with_org_name_new_rows.csv \
   -d ai/data_pipeline/embed_snippets_biosent/__init__.py \
   -d ai/data_pipeline/embed_snippets_biosent/__main__.py \
   -o data/embed_snippets_biosent.parquet \
+  -p params.py:BIOSENT_FILE_NAME \
   docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_snippets_biosent ."
 fi
 
@@ -138,6 +140,7 @@ if [[ "$*" =~ "embed_biosent_finding" ]]; then
   -d ai/data_pipeline/embed_finding_biosent/__init__.py \
   -d ai/data_pipeline/embed_finding_biosent/__main__.py \
   -o data/embed_finding_biosent.parquet \
+  -p params.py:BIOSENT_FILE_NAME \
   docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_finding_biosent ."
 fi
 

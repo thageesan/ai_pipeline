@@ -20,19 +20,27 @@ stages:
     outs:
     - data/cleaned_snippets_with_org_name_new_rows.csv
   sync_uml_sbert:
-    cmd: aws s3 cp s3://ezra-ml-dvc/reporter/UMLSBert ./data/UMLS --recursive
+    cmd: docker-compose run ml.thageesan "python -m ai.migration.download_umlsbert
+      ."
     deps:
-    - s3://ezra-ml-dvc/reporter/UMLSBert/config.json
-    - s3://ezra-ml-dvc/reporter/UMLSBert/pytorch_model.bin
-    - s3://ezra-ml-dvc/reporter/UMLSBert/vocab.txt
+    - ai/migration/download_umlsbert/__init__.py
+    - ai/migration/download_umlsbert/__main__.py
+    params:
+    - params.py:
+        - UMLS_MODEL_NAME
     outs:
     - data/UMLS/config.json
     - data/UMLS/pytorch_model.bin
     - data/UMLS/vocab.txt
   sync_bio_sent:
-    cmd: aws s3 cp s3://ezra-ml-dvc/reporter/bioSent2Vec.bin ./data/bioSent2Vec.bin
+    cmd: docker-compose run ml.thageesan "python -m ai.migration.sync_bio_sent
+      ."
     deps:
-    - s3://ezra-ml-dvc/reporter/bioSent2Vec.bin
+    - ai/migration/sync_bio_sent/__init__.py
+    - ai/migration/sync_bio_sent/__main__.py
+    params:
+    - params.py:
+        - BIOSENT_FILE_NAME
     outs:
     - data/bioSent2Vec.bin
   embed_biosent_snippets:
@@ -43,6 +51,9 @@ stages:
     - ai/data_pipeline/embed_snippets_biosent/__main__.py
     - data/bioSent2Vec.bin
     - data/training_samples.parquet
+    params:
+    - params.py:
+        - BIOSENT_FILE_NAME
     outs:
     - data/embed_snippets_biosent.parquet
   embed_umlsbert_snippets:
@@ -96,6 +107,9 @@ stages:
     - ai/data_pipeline/embed_finding_biosent/__main__.py
     - data/bioSent2Vec.bin
     - data/training_samples.parquet
+    params:
+    - params.py:
+        - BIOSENT_FILE_NAME
     outs:
     - data/embed_finding_biosent.parquet
   extract_features:

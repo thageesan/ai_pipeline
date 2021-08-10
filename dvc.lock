@@ -33,17 +33,18 @@ stages:
       md5: 5376aeada62a4fb140929455ffe52e76
       size: 799345
   sync_uml_sbert:
-    cmd: aws s3 cp s3://ezra-ml-dvc/reporter/UMLSBert ./data/UMLS --recursive
+    cmd: docker-compose run ml.thageesan "python -m ai.migration.download_umlsbert
+      ."
     deps:
-    - path: s3://ezra-ml-dvc/reporter/UMLSBert/config.json
-      etag: 1548c9643eaee9881e522896ebc96396
-      size: 605
-    - path: s3://ezra-ml-dvc/reporter/UMLSBert/pytorch_model.bin
-      etag: f4890ddef1813d95f0b2c3ec7b469d46-53
-      size: 438007537
-    - path: s3://ezra-ml-dvc/reporter/UMLSBert/vocab.txt
-      etag: 7f5029172a4e3c1198f13c92bdb06d89
-      size: 225062
+    - path: ai/migration/download_umlsbert/__init__.py
+      md5: 96b955ac064dea78e099e40bdb58baf1
+      size: 1297
+    - path: ai/migration/download_umlsbert/__main__.py
+      md5: 28c8ccf23d63e0a8262fb7347708d3c8
+      size: 85
+    params:
+      params.py:
+        UMLS_MODEL_NAME: GanjinZero/UMLSBert_ENG
     outs:
     - path: data/UMLS/config.json
       md5: 1548c9643eaee9881e522896ebc96396
@@ -81,11 +82,17 @@ stages:
       md5: 5d5411f76f66ba398447384d76cfb7e9
       size: 66006966
   sync_bio_sent:
-    cmd: aws s3 cp s3://ezra-ml-dvc/reporter/bioSent2Vec.bin ./data/bioSent2Vec.bin
+    cmd: docker-compose run ml.thageesan "python -m ai.migration.sync_bio_sent ."
     deps:
-    - path: s3://ezra-ml-dvc/reporter/bioSent2Vec.bin
-      etag: 9f3ca0f37ada92f6dc6643d59cd51d82-2680
-      size: 22475736490
+    - path: ai/migration/sync_bio_sent/__init__.py
+      md5: 3d7c9a9c7c01712a68813f7dd449a1b3
+      size: 716
+    - path: ai/migration/sync_bio_sent/__main__.py
+      md5: 19bca0b53b7ca16ec99a1b8107f82f60
+      size: 81
+    params:
+      params.py:
+        BIOSENT_FILE_NAME: bioSent2Vec.bin
     outs:
     - path: data/bioSent2Vec.bin
       md5: e0c6c5cf7e4f8e88ec253ee46b461e58
@@ -95,8 +102,8 @@ stages:
       ."
     deps:
     - path: ai/data_pipeline/embed_snippets_biosent/__init__.py
-      md5: e26684e82dd154de4ac73db22e2c15af
-      size: 2167
+      md5: 7d60f668fa422b747053a41b0526c8fe
+      size: 2198
     - path: ai/data_pipeline/embed_snippets_biosent/__main__.py
       md5: 94ac76570d1c72169c160c4b73b57c10
       size: 252
@@ -106,6 +113,9 @@ stages:
     - path: data/training_samples.parquet
       md5: f786a1a0f43a8abdffdca36e2a5e36f5
       size: 148993
+    params:
+      params.py:
+        BIOSENT_FILE_NAME: bioSent2Vec.bin
     outs:
     - path: data/embed_snippets_biosent.parquet
       md5: adf465e4748ca9ca1ee1b0c72f02d74b
@@ -171,21 +181,27 @@ stages:
       size: 148993
     outs:
     - path: data/embed_finding_umls.parquet
-      md5: 315086c812d62a9c3fd725033c241ac9
-      size: 87834492
+      md5: c5bc759fe9815d1974af6ffd7683a11b
+      size: 87831425
   embed_biosent_finding:
     cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_finding_biosent
       ."
     deps:
     - path: ai/data_pipeline/embed_finding_biosent/__init__.py
-      md5: 007381dd3147d72d268e9e53187aa52a
-      size: 2158
+      md5: a5a136f8b34362119588713b67edd0d2
+      size: 2190
     - path: ai/data_pipeline/embed_finding_biosent/__main__.py
       md5: e7a0a2e61bad8a4d0a95b6aa933450fd
       size: 252
+    - path: data/bioSent2Vec.bin
+      md5: e0c6c5cf7e4f8e88ec253ee46b461e58
+      size: 22475736490
     - path: data/training_samples.parquet
       md5: f786a1a0f43a8abdffdca36e2a5e36f5
       size: 148993
+    params:
+      params.py:
+        BIOSENT_FILE_NAME: bioSent2Vec.bin
     outs:
     - path: data/embed_finding_biosent.parquet
       md5: b84ef1b0ce89266e77b0072df3c88aff
@@ -268,8 +284,8 @@ stages:
       md5: b84ef1b0ce89266e77b0072df3c88aff
       size: 80526054
     - path: data/embed_finding_umls.parquet
-      md5: 315086c812d62a9c3fd725033c241ac9
-      size: 87834492
+      md5: c5bc759fe9815d1974af6ffd7683a11b
+      size: 87831425
     - path: data/embed_numbers_umls.parquet
       md5: a2737097877e123f484299beb7ec2fa5
       size: 1796642
@@ -284,8 +300,8 @@ stages:
       size: 148993
     outs:
     - path: data/feature_extraction.parquet
-      md5: 7e76cca17252f86bdd00caa86feb540e
-      size: 170000
+      md5: 75082ab09491869a41d1b5b2bcee1520
+      size: 169998
   train_test_split:
     cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.train_test_split
       ."
@@ -297,19 +313,19 @@ stages:
       md5: 6864810be22611cf7b7b88df3f4e7dc5
       size: 247
     - path: data/feature_extraction.parquet
-      md5: 7e76cca17252f86bdd00caa86feb540e
-      size: 170000
+      md5: 75082ab09491869a41d1b5b2bcee1520
+      size: 169998
     params:
       params.py:
         TestTrainSetConfig:
           TEST_SIZE: 0.2
     outs:
     - path: data/testing_set.parquet
-      md5: 95550eeb517c7519a66f539f3754bd2b
-      size: 53373
+      md5: 6f9d326436422a685ecf6395401735e9
+      size: 53923
     - path: data/training_set.parquet
-      md5: 606a6f2863f24899c9c58163bce643b5
-      size: 180001
+      md5: 419b8206d27d4ac66771839a411701b2
+      size: 182176
   train_model:
     cmd: docker-compose run ml.thageesan "python -m ai.training ."
     deps:
@@ -320,8 +336,8 @@ stages:
       md5: 9c780328b11074dd3936ea268a56e93d
       size: 225
     - path: data/training_set.parquet
-      md5: 606a6f2863f24899c9c58163bce643b5
-      size: 180001
+      md5: 419b8206d27d4ac66771839a411701b2
+      size: 182176
     params:
       params.py:
         XGBTrainConfig:
@@ -338,8 +354,8 @@ stages:
           use_label_encoder: false
     outs:
     - path: data/xgb.model
-      md5: 5cb4ebe8e5a5c42e4fe3fa72ff6bbad6
-      size: 1856623
+      md5: e9052f77a4d8ccc329057e6864288b94
+      size: 1852181
   test_model:
     cmd: docker-compose run ml.thageesan "python -m ai.test ."
     deps:
@@ -350,12 +366,12 @@ stages:
       md5: 00955820270b13976fda9fb9179453c7
       size: 221
     - path: data/testing_set.parquet
-      md5: 95550eeb517c7519a66f539f3754bd2b
-      size: 53373
+      md5: 6f9d326436422a685ecf6395401735e9
+      size: 53923
     - path: data/xgb.model
-      md5: 5cb4ebe8e5a5c42e4fe3fa72ff6bbad6
-      size: 1856623
+      md5: e9052f77a4d8ccc329057e6864288b94
+      size: 1852181
     outs:
     - path: data/metrics/test_results.json
-      md5: 3ef0d5036c1abe635416271518232092
-      size: 228
+      md5: ec502059e075ff2781fbfe6f7424cfa5
+      size: 231
