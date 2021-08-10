@@ -342,7 +342,7 @@ stages:
       params.py:
         XGBTrainConfig:
           subsample: 0.8
-          n_estimators: 500
+          n_estimators: 400
           min_child_weight: 5
           max_depth: 6
           learning_rate: 0.1
@@ -354,8 +354,8 @@ stages:
           use_label_encoder: false
     outs:
     - path: data/xgb.model
-      md5: e9052f77a4d8ccc329057e6864288b94
-      size: 1852181
+      md5: da10ccd873cba5dde63bfd1ab3ebe33c
+      size: 1488586
   test_model:
     cmd: docker-compose run ml.thageesan "python -m ai.test ."
     deps:
@@ -369,9 +369,9 @@ stages:
       md5: 6f9d326436422a685ecf6395401735e9
       size: 53923
     - path: data/xgb.model
-      md5: e9052f77a4d8ccc329057e6864288b94
-      size: 1852181
+      md5: da10ccd873cba5dde63bfd1ab3ebe33c
+      size: 1488586
     outs:
     - path: metrics/test_results.json
-      md5: ec502059e075ff2781fbfe6f7424cfa5
-      size: 231
+      md5: 9586674efc1489ba751124c62dfe94f7
+      size: 229
