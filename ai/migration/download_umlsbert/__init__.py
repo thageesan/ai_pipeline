@@ -13,7 +13,7 @@ def app():
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModel.from_pretrained(model_name)
 
-    output_dir = "/tmp/data/umlsbert"
+    output_dir = "/tmp/data/umls"
 
     create_directory(output_dir)
 

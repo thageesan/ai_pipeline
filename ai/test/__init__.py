@@ -4,7 +4,7 @@ from shared.tools.utils import pd
 from joblib import load
 from json import dump
 from numpy import array
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, confusion_matrix
 
 
 def app():
@@ -27,11 +27,16 @@ def app():
     y_predict = model.predict(x_test)
 
     accuracy = accuracy_score(y_test, y_predict)
+    true_negative, false_positive, false_negative,  true_positive = confusion_matrix(y_test, y_predict, normalize='all').ravel()
 
     with open(f'{metric_folder_path}/{metric_file_name}', 'w') as outfile:
         dump({
             'test_model': {
                 'accuracy': accuracy,
-                'loss': 1 - accuracy
+                'loss': 1 - accuracy,
+                'true_negative': true_negative,
+                'false_negative': false_negative,
+                'true_positive': true_positive,
+                'false_positive': false_positive
             }
         }, outfile)

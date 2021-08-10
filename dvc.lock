@@ -157,13 +157,22 @@ stages:
     - path: ai/data_pipeline/embed_finding_umlsbert/__main__.py
       md5: 697fce12999071cf5c64234c3ff6a0c9
       size: 253
+    - path: data/UMLS/config.json
+      md5: 1548c9643eaee9881e522896ebc96396
+      size: 605
+    - path: data/UMLS/pytorch_model.bin
+      md5: e51a431feca65ed1e7784312cf1af54d
+      size: 438007537
+    - path: data/UMLS/vocab.txt
+      md5: 7f5029172a4e3c1198f13c92bdb06d89
+      size: 225062
     - path: data/training_samples.parquet
       md5: f786a1a0f43a8abdffdca36e2a5e36f5
       size: 148993
     outs:
     - path: data/embed_finding_umls.parquet
-      md5: c5bc759fe9815d1974af6ffd7683a11b
-      size: 87831425
+      md5: 315086c812d62a9c3fd725033c241ac9
+      size: 87834492
   embed_biosent_finding:
     cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_finding_biosent
       ."
@@ -191,12 +200,21 @@ stages:
     - path: ai/data_pipeline/embed_numbers_umls/__main__.py
       md5: 7b27e85644eb3c496cfa3d1c8aa79bfd
       size: 249
+    - path: data/UMLS/config.json
+      md5: 1548c9643eaee9881e522896ebc96396
+      size: 605
+    - path: data/UMLS/pytorch_model.bin
+      md5: e51a431feca65ed1e7784312cf1af54d
+      size: 438007537
+    - path: data/UMLS/vocab.txt
+      md5: 7f5029172a4e3c1198f13c92bdb06d89
+      size: 225062
     - path: data/training_samples.parquet
       md5: f786a1a0f43a8abdffdca36e2a5e36f5
       size: 148993
     outs:
     - path: data/embed_numbers_umls.parquet
-      md5: 7e761d64d2fbcb369edddf0033acd27c
+      md5: a2737097877e123f484299beb7ec2fa5
       size: 1796642
   extract_features_for_training:
     cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.feature_extraction.training
@@ -250,10 +268,10 @@ stages:
       md5: b84ef1b0ce89266e77b0072df3c88aff
       size: 80526054
     - path: data/embed_finding_umls.parquet
-      md5: c5bc759fe9815d1974af6ffd7683a11b
-      size: 87831425
+      md5: 315086c812d62a9c3fd725033c241ac9
+      size: 87834492
     - path: data/embed_numbers_umls.parquet
-      md5: 7e761d64d2fbcb369edddf0033acd27c
+      md5: a2737097877e123f484299beb7ec2fa5
       size: 1796642
     - path: data/embed_snippets_biosent.parquet
       md5: adf465e4748ca9ca1ee1b0c72f02d74b
@@ -266,8 +284,8 @@ stages:
       size: 148993
     outs:
     - path: data/feature_extraction.parquet
-      md5: 3ca9e29b94914fa557894437fe257147
-      size: 170004
+      md5: 7e76cca17252f86bdd00caa86feb540e
+      size: 170000
   train_test_split:
     cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.train_test_split
       ."
@@ -279,19 +297,19 @@ stages:
       md5: 6864810be22611cf7b7b88df3f4e7dc5
       size: 247
     - path: data/feature_extraction.parquet
-      md5: 3ca9e29b94914fa557894437fe257147
-      size: 170004
+      md5: 7e76cca17252f86bdd00caa86feb540e
+      size: 170000
     params:
       params.py:
         TestTrainSetConfig:
           TEST_SIZE: 0.2
     outs:
     - path: data/testing_set.parquet
-      md5: d8a5d007d211761de0be4ae2ad8fbfc4
-      size: 54020
+      md5: 95550eeb517c7519a66f539f3754bd2b
+      size: 53373
     - path: data/training_set.parquet
-      md5: cfda6ee0785c51daf428fe2591a61346
-      size: 180286
+      md5: 606a6f2863f24899c9c58163bce643b5
+      size: 180001
   train_model:
     cmd: docker-compose run ml.thageesan "python -m ai.training ."
     deps:
@@ -302,8 +320,8 @@ stages:
       md5: 9c780328b11074dd3936ea268a56e93d
       size: 225
     - path: data/training_set.parquet
-      md5: cfda6ee0785c51daf428fe2591a61346
-      size: 180286
+      md5: 606a6f2863f24899c9c58163bce643b5
+      size: 180001
     params:
       params.py:
         XGBTrainConfig:
@@ -320,21 +338,24 @@ stages:
           use_label_encoder: false
     outs:
     - path: data/xgb.model
-      md5: 624c2a028aa3b240bcc528ad17268e1d
-      size: 1880085
+      md5: 5cb4ebe8e5a5c42e4fe3fa72ff6bbad6
+      size: 1856623
   test_model:
     cmd: docker-compose run ml.thageesan "python -m ai.test ."
     deps:
     - path: ai/test/__init__.py
-      md5: 16c3118d227b4eecaef1fc86377ed582
-      size: 1006
+      md5: 2120f81a93ff4b35680684fab85fe4bf
+      size: 1349
     - path: ai/test/__main__.py
       md5: 00955820270b13976fda9fb9179453c7
       size: 221
     - path: data/testing_set.parquet
-      md5: d8a5d007d211761de0be4ae2ad8fbfc4
-      size: 54020
+      md5: 95550eeb517c7519a66f539f3754bd2b
+      size: 53373
+    - path: data/xgb.model
+      md5: 5cb4ebe8e5a5c42e4fe3fa72ff6bbad6
+      size: 1856623
     outs:
     - path: data/metrics/test_results.json
-      md5: adaf8dca922a4a33dc55772a1f759fdf
-      size: 77
+      md5: 3ef0d5036c1abe635416271518232092
+      size: 228

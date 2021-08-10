@@ -180,3 +180,7 @@ if [[ "$*" =~ "test_model" ]]; then
   -M data/metrics/test_results.json \
   docker-compose run ml.thageesan "python -m ai.test ."
 fi
+
+if [[ "$*" =~ "playground" ]]; then
+  docker-compose run ml.thageesan "python -m ai.test ."
+fi
