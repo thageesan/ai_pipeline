@@ -26,12 +26,12 @@ stages:
       ./data/cleaned_snippets_with_org_name_new_rows.csv
     deps:
     - path: s3://ezra-ml-dvc/reporter/cleaned_snippets_with_org_name_new_rows.csv
-      etag: 945af0c2c6c3518377534b8740b0a0a5
-      size: 799345
+      etag: 3cc46ac5b32a0e7d987c796c94fe417c
+      size: 795468
     outs:
     - path: data/cleaned_snippets_with_org_name_new_rows.csv
-      md5: 5376aeada62a4fb140929455ffe52e76
-      size: 799345
+      md5: 3b3b06a2c01b9ff8d3633b91dcac1439
+      size: 795468
   sync_uml_sbert:
     cmd: docker-compose run ml.thageesan "python -m ai.migration.download_umlsbert
       ."
@@ -151,12 +151,12 @@ stages:
       md5: e7c69f6ce808a6c40dea70161553c93b
       size: 87
     - path: data/cleaned_snippets_with_org_name_new_rows.csv
-      md5: 5376aeada62a4fb140929455ffe52e76
-      size: 799345
+      md5: 3b3b06a2c01b9ff8d3633b91dcac1439
+      size: 795468
     outs:
     - path: data/corpus.npy
-      md5: e5322ad566d1d16ddf4f36695e072234
-      size: 85060
+      md5: 44972e7fb4aaa4cb26748db68f5b6761
+      size: 84513
   embed_umlsbert_finding:
     cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.embed_finding_umlsbert
       ."
@@ -278,8 +278,8 @@ stages:
       md5: ec5289084b09a6a810e602883cd438ec
       size: 249
     - path: data/corpus.npy
-      md5: e5322ad566d1d16ddf4f36695e072234
-      size: 85060
+      md5: 44972e7fb4aaa4cb26748db68f5b6761
+      size: 84513
     - path: data/embed_finding_biosent.parquet
       md5: b84ef1b0ce89266e77b0072df3c88aff
       size: 80526054
@@ -300,8 +300,8 @@ stages:
       size: 148993
     outs:
     - path: data/feature_extraction.parquet
-      md5: 75082ab09491869a41d1b5b2bcee1520
-      size: 169998
+      md5: 24254bd542c2697991e666e3d43ee6a7
+      size: 170121
   train_test_split:
     cmd: docker-compose run ml.thageesan "python -m ai.data_pipeline.train_test_split
       ."
@@ -313,19 +313,19 @@ stages:
       md5: 6864810be22611cf7b7b88df3f4e7dc5
       size: 247
     - path: data/feature_extraction.parquet
-      md5: 75082ab09491869a41d1b5b2bcee1520
-      size: 169998
+      md5: 24254bd542c2697991e666e3d43ee6a7
+      size: 170121
     params:
       params.py:
         TestTrainSetConfig:
           TEST_SIZE: 0.2
     outs:
     - path: data/testing_set.parquet
-      md5: 6f9d326436422a685ecf6395401735e9
-      size: 53923
+      md5: dbdd32096a88fb769b56f7d8830c51a2
+      size: 52862
     - path: data/training_set.parquet
-      md5: 419b8206d27d4ac66771839a411701b2
-      size: 182176
+      md5: 36a97c4ff0e24ae48f4d129ccd148089
+      size: 180878
   train_model:
     cmd: docker-compose run ml.thageesan "python -m ai.training ."
     deps:
@@ -336,8 +336,8 @@ stages:
       md5: 9c780328b11074dd3936ea268a56e93d
       size: 225
     - path: data/training_set.parquet
-      md5: 419b8206d27d4ac66771839a411701b2
-      size: 182176
+      md5: 36a97c4ff0e24ae48f4d129ccd148089
+      size: 180878
     params:
       params.py:
         XGBTrainConfig:
@@ -354,8 +354,8 @@ stages:
           use_label_encoder: false
     outs:
     - path: data/xgb.model
-      md5: e9052f77a4d8ccc329057e6864288b94
-      size: 1852181
+      md5: e5f49ca1a4117a8f6b0acfa5523e0638
+      size: 1859427
   test_model:
     cmd: docker-compose run ml.thageesan "python -m ai.test ."
     deps:
@@ -366,12 +366,12 @@ stages:
       md5: 00955820270b13976fda9fb9179453c7
       size: 221
     - path: data/testing_set.parquet
-      md5: 6f9d326436422a685ecf6395401735e9
-      size: 53923
+      md5: dbdd32096a88fb769b56f7d8830c51a2
+      size: 52862
     - path: data/xgb.model
-      md5: e9052f77a4d8ccc329057e6864288b94
-      size: 1852181
+      md5: e5f49ca1a4117a8f6b0acfa5523e0638
+      size: 1859427
     outs:
     - path: metrics/test_results.json
-      md5: ec502059e075ff2781fbfe6f7424cfa5
-      size: 231
+      md5: a2a7ce2b8146f77008ce31b2e6b8d070
+      size: 230
