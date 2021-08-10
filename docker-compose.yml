@@ -45,3 +45,4 @@ services:
       - ./ai:/app/ai
       - ./shared:/app/shared
       - ./params.py:/app/params.py
+      - ./metrics:/app/metrics

@@ -372,6 +372,6 @@ stages:
       md5: e9052f77a4d8ccc329057e6864288b94
       size: 1852181
     outs:
-    - path: data/metrics/test_results.json
+    - path: metrics/test_results.json
       md5: ec502059e075ff2781fbfe6f7424cfa5
       size: 231

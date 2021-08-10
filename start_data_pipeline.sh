@@ -180,7 +180,7 @@ if [[ "$*" =~ "test_model" ]]; then
   -d data/testing_set.parquet \
   -d ai/test/__init__.py \
   -d ai/test/__main__.py \
-  -M data/metrics/test_results.json \
+  -M metrics/test_results.json \
   docker-compose run ml.thageesan "python -m ai.test ."
 fi
 

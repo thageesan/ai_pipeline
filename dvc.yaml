@@ -171,5 +171,5 @@ stages:
     - data/testing_set.parquet
     - data/xgb.model
     metrics:
-    - data/metrics/test_results.json:
+    - metrics/test_results.json:
         cache: false
