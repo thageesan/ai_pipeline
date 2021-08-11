@@ -1,9 +1,0 @@
----
-
-username: "thageesan"
-name: "test-ai"
-aws_region: "us-east-2"
-security_group: "vpn-only-2"
-vpc_subnet_id: "subnet-020e426f56ed220b3"
-key_pair: "ezra-dl-keys"
-server_name: "Test AI Local Dev Server"

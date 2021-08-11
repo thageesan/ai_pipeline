@@ -185,5 +185,5 @@ if [[ "$*" =~ "test_model" ]]; then
 fi
 
 if [[ "$*" =~ "playground" ]]; then
-  docker-compose run ml.thageesan "python -m ai.test ."
+  docker-compose run ml.thageesan "python -m ai.test.plot ."
 fi
